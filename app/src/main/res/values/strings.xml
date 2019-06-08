@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">follower</string>
+    <string name="start">开始</string>
+    <string name="over">停止</string>
+    <string name="action_settings">扫描蓝牙</string>
+    <string name="action_connect">直连设备</string>
+    <string name="action_quit">退出</string>
+    <string name="scan">扫描蓝牙</string>
+    <string name="connect">一键连接</string>
+    <string name="action_gravity">重力控制</string>
+    <string name="value">俯仰值:%1$d</string>
+    <string name="value1">俯仰值:%1$d</string>
+
+</resources>
