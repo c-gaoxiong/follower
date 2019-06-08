@@ -40,6 +40,8 @@ public class BleGattClass {
         bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
         bluetoothDevice = bluetoothAdapter.getRemoteDevice(uuid);
+
+        bluetoothAdapter.startDiscovery();
     }
 
     void connectBluetooth() {
@@ -48,8 +50,13 @@ public class BleGattClass {
             public void run() {
 
                 if (bluetoothGatt == null){
-                    bluetoothGatt = bluetoothDevice.connectGatt(context, false, callback);
-                    Logger.e("执行了连接的操作");
+                    if(bluetoothDevice!=null){
+                        bluetoothGatt = bluetoothDevice.connectGatt(context, false, callback);
+                        Logger.e("执行了连接的操作");
+                    }else {
+                        state = 4;
+                    }
+
                 }else {
                     bluetoothGatt.close();
                     bluetoothGatt = bluetoothDevice.connectGatt(context, false, callback);
@@ -225,6 +232,18 @@ public class BleGattClass {
 
     public String getAddress() {
         return uuid;
+    }
+
+    public boolean disConnect() {
+        if (bluetoothGatt != null) {
+            bluetoothGatt.disconnect();
+            bluetoothGatt.close();
+            Logger.e( "执行了断开连接");
+            bluetoothGatt = null;
+            return true;
+        }
+
+        return true;
     }
 
     public int getState() {

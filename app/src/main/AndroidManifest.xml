@@ -43,7 +43,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ConnectActivity"></activity>
+        <activity android:name=".ConnectActivity" />
+        <activity android:name=".GravityActivity"></activity>
     </application>
 
 </manifest>

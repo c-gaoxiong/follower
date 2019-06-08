@@ -87,14 +87,14 @@ public class BleActivity extends ListActivity implements PermissionInterface {
         button = (Button) findViewById(R.id.mButton);
         button.setOnClickListener(new ButtonListener());
 
-        ArrayList<HashMap<String, String>> list = new ArrayList<>();
-        HashMap<String, String> map1 = new HashMap<>();
-        map1.put("user_name", "蓝牙名");
-        map1.put("user_id", "蓝牙地址");
-        list.add(map1);
-        SimpleAdapter simpleAdapter = new SimpleAdapter(this, list, R.layout.user,
-                new String[]{"user_name", "user_id"}, new int[]{R.id.user_name, R.id.user_id});
-        setListAdapter(simpleAdapter);
+//        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+//        HashMap<String, String> map1 = new HashMap<>();
+//        map1.put("user_name", "蓝牙名");
+//        map1.put("user_id", "蓝牙地址");
+//        list.add(map1);
+//        SimpleAdapter simpleAdapter = new SimpleAdapter(this, list, R.layout.user,
+//                new String[]{"user_name", "user_id"}, new int[]{R.id.user_name, R.id.user_id});
+//        setListAdapter(simpleAdapter);
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -254,6 +254,7 @@ public class BleActivity extends ListActivity implements PermissionInterface {
 //        bleService.initialize();
 //        bleService.connect(bluetoothDevice,Mac);
 //        bleService.sendOrder("a");
+
         Intent intent =new Intent("android.ble.chair.control");
         intent.putExtra("address",Mac.toString());
         sendBroadcast(intent);
