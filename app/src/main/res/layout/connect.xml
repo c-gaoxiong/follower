@@ -3,23 +3,30 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/user1_name"
         style="@style/layout_wrap"
         android:textSize="@dimen/activity_textSize"
+        android:textColor="@color/text_gray"
 
         />
+
     <TextView
         android:id="@+id/user1_id"
         android:textSize="@dimen/activity_textSize"
         style="@style/layout_wrap"
+        android:textColor="@color/text_gray"
 
         />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/connect"
-        android:textSize="20sp"
-        />
+        android:layout_marginLeft="6dp"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorPrimaryDark"
+        android:textSize="20sp" />
 
 </LinearLayout>

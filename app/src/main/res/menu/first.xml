@@ -1,26 +1,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.follower.FirstActivity" >
+    tools:context="com.follower.FirstActivity">
 
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:title="@string/action_setting"
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_connect"
         android:orderInCategory="100"
         android:title="@string/action_connect"
-        app:showAsAction="never"/>
-    <item  android:id="@+id/action_gravity"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_gravity"
         android:orderInCategory="100"
         android:title="@string/action_gravity"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_quit"
         android:orderInCategory="100"
         android:title="@string/action_quit"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
 </menu>

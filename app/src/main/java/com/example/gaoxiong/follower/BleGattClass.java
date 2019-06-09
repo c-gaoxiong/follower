@@ -34,15 +34,22 @@ public class BleGattClass {
     private BluetoothGattDescriptor descriptor;
     private int state = 0;
 
+    BleGattClass( Context context){
+        this.context = context;
+    }
+
     BleGattClass(Context context, String string) {
         this.uuid = string;
         this.context = context;
-        bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = bluetoothManager.getAdapter();
-        bluetoothDevice = bluetoothAdapter.getRemoteDevice(uuid);
-
-        bluetoothAdapter.startDiscovery();
+        init();
     }
+void init(){
+    bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+    bluetoothAdapter = bluetoothManager.getAdapter();
+
+
+    bluetoothDevice = bluetoothAdapter.getRemoteDevice(uuid);
+}
 
     void connectBluetooth() {
         new Thread(new Runnable() {
@@ -58,7 +65,6 @@ public class BleGattClass {
                     }
 
                 }else {
-                    bluetoothGatt.close();
                     bluetoothGatt = bluetoothDevice.connectGatt(context, false, callback);
                 }
 
@@ -199,13 +205,13 @@ public class BleGattClass {
                                             BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
             broadcastUpdate(BleUUID.RECEIVED, characteristic);
-            Logger.d("onCharacteristicChanged" + new String(characteristic.getValue()));
+            Logger.d("onCharacteristicChanged>>>>>>" + new String(characteristic.getValue()));
         }
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt,  BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            Logger.d("onCharacteristicWrite" + characteristic.getValue().toString());
+            Logger.d("onCharacteristicWrite" + new String(characteristic.getValue()));
 
         }
 
@@ -232,6 +238,10 @@ public class BleGattClass {
 
     public String getAddress() {
         return uuid;
+    }
+    public void setUuid(String address){
+        uuid = address;
+        init();
     }
 
     public boolean disConnect() {

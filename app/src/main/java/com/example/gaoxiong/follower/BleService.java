@@ -19,11 +19,15 @@ import java.util.List;
 public class BleService extends Service {
     MyReceiver myReceiver;
     ReceivedReceiver receivedReceiver;
+    boolean start=false;
     public BleService() {
     }
+    StartScan  startScan= StartScan.getInstance();
+
 //    List<BleGattClass> bleGattClassList = new ArrayList<>();
 
-    BleGattClass bleGattClass =null;
+    BleGattClass bleGattClass ;
+
     HashMap<String,BleGattClass> hashMap = new HashMap<>();
 
     @Override
@@ -34,7 +38,11 @@ public class BleService extends Service {
 
     @Override
     public void onCreate() {
+
         super.onCreate();
+
+
+        startScan.scanDevice(true);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BleUUID.CHAIR_CONTROL);
         myReceiver = new MyReceiver();
@@ -70,15 +78,29 @@ public class BleService extends Service {
     public class ReceivedReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
-            String ctr = intent.getStringExtra("data").trim();
 
-            if(ctr!=null){
-                if(ctr.length()<=7){
-                    Intent i = new Intent(BleUUID.CHAIR_CONTROL);
-                    i.putExtra("control",ctr);
-                    sendBroadcast(i);
+            String ctr = intent.getStringExtra("data");
+            String start_up= intent.getStringExtra("start");
+
+            if(start_up!=null) {
+                if (start_up.equals("开始跟随")) {
+                    start = true;
+                } else if (start_up.equals("停止跟随") || start_up.equals("停止")) {
+                    start = false;
                 }
+            }
+            if(start) {
+                if (ctr != null) {
+                    String ctr1 = ctr.substring(0, 7);
+                    Logger.d(ctr);
 
+                    if (ctr1.length() == 7 && ctr1.startsWith("#")) {
+                        Logger.d(ctr1);
+                        Intent i = new Intent(BleUUID.CHAIR_CONTROL);
+                        i.putExtra("control", ctr1);
+                        sendBroadcast(i);
+                    }
+                }
             }
 
         }
@@ -105,25 +127,32 @@ public class BleService extends Service {
                         MyToast("未连接设备");
                     }
 
-//                    sendOrder(control);
+
                 }
 
                 if (address != null) {
                     Logger.d(address);
                     if(hashMap.get(address)==null){
-                        bleGattClass = new BleGattClass(getApplicationContext(),address);
-                        bleGattClass.connectBluetooth();
-                        hashMap.put(address,bleGattClass);
+                        if(startScan.address.contains(address)){
+                            bleGattClass = new BleGattClass(getApplicationContext(),address);
+                            bleGattClass.connectBluetooth();
+                            hashMap.put(address,bleGattClass);
+                        }else {
+                            MyToast("未扫描到设备");
+                        }
+
                     }else {
                         switch (hashMap.get(address).getState()){
                             case 0:
                                 MyToast("未连接");
+                                Logger.d("未连接");
                                 hashMap.get(address).connectBluetooth();
                                 break;
                             case 1:
                                 MyToast("正在连接");
                                 break;
                             case 2 :
+                                Logger.d("已连接");
                                 MyToast("已连接");
                                 break;
                             case 3:
@@ -143,6 +172,7 @@ public class BleService extends Service {
                             MyToast("断开连接："+address);
                         }else {
                             MyToast("未连接");
+                            Logger.d("未连接");
                         }
 
                     }

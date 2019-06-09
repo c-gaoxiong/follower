@@ -1,6 +1,8 @@
 package com.example.gaoxiong.follower;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -27,11 +29,6 @@ import com.orhanobut.logger.Logger;
 
 
 public  class FirstActivity extends AppCompatActivity implements PermissionInterface{
-
-
-
-
-
     Button stopButton ;
     Button frontButton ;
     Button backButton ;
@@ -40,7 +37,9 @@ public  class FirstActivity extends AppCompatActivity implements PermissionInter
     Button startButton ;
     Button overButton;
     private PermissionHelper mPermissionHelper;
-
+    BluetoothAdapter mBluetoothAdapter;
+    BluetoothManager bluetoothManager;
+    StartScan startScan;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,8 +64,17 @@ public  class FirstActivity extends AppCompatActivity implements PermissionInter
         overButton.setOnClickListener(clickListener );
         Intent intent = new Intent(FirstActivity.this, BleService.class);
         startService(intent);
+         bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+        if ( !mBluetoothAdapter.isEnabled()) {
+            if (mBluetoothAdapter != null) {
+                mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
+            }
 
-
+        }
+        startScan =StartScan.getInstance();
+        startScan.setmBluetoothAdapter(mBluetoothAdapter);
+        startScan.scanDevice(true);
     }
 
 
@@ -154,7 +162,8 @@ public  class FirstActivity extends AppCompatActivity implements PermissionInter
 
         }
         if(id==R.id.action_quit){
-            finish();
+            Intent intent = new Intent(FirstActivity.this,MainActivity.class);
+            FirstActivity.this.startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -164,6 +173,14 @@ public  class FirstActivity extends AppCompatActivity implements PermissionInter
     protected void onResume() {
         super.onResume();
 
+
+        // 确保蓝牙在设备上可以开启(判断手机是否支持蓝牙和是否开启，没有开启则开启)
+        if ( !mBluetoothAdapter.isEnabled()) {
+            if (mBluetoothAdapter != null) {
+                mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
+            }
+
+        }
 
     }
 

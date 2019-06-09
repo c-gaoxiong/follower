@@ -35,6 +35,11 @@ public class ConnectActivity extends ListActivity {
         map2.put("user_id",str[1]);
         map2.put("connect","连接");
         list.add(map2);
+        HashMap<String, String> map3= new HashMap<>();
+        map3.put("user_name", "坐垫");
+        map3.put("user_id",str[2]);
+        map3.put("connect","连接");
+        list.add(map3);
         SimpleAdapter simpleAdapter = new SimpleAdapter(this, list, R.layout.connect,
                 new String[]{"user_name", "user_id","connect"}, new int[]{R.id.user1_name, R.id.user1_id,R.id.connect}){
             @Override
@@ -68,14 +73,7 @@ public class ConnectActivity extends ListActivity {
                     }
 
                 });
-//                convertView.setOnLongClickListener(new View.OnLongClickListener() {
-//                    @Override
-//                    public boolean onLongClick(View v) {
-//
-//
-//                        return true;
-//                    }
-//                });
+
                 return view;
             }
 
@@ -86,22 +84,4 @@ public class ConnectActivity extends ListActivity {
     }
 
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-//        Intent intent =new Intent("android.ble.chair.control");
-//        intent.putExtra("address",str[position]);
-//        sendBroadcast(intent);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Logger.d("点击了：");
-            }
-        });
-
-
-    }
-//    onL
 }

@@ -16,8 +16,8 @@
         android:layout_height="45sp"
         android:layout_centerInParent="true"
         android:layout_margin="20dp"
-        android:background="@drawable/stop"
-        />
+        android:background="@drawable/stop" />
+
     <Button
         android:id="@+id/frontButton"
         android:layout_width="45sp"
@@ -25,16 +25,15 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="40dp"
         android:layout_above="@+id/stopButton"
-        android:background="@drawable/front_arrow"
-        />
+        android:background="@drawable/front_arrow" />
+
     <Button
         android:id="@+id/backButton"
         style="@style/layout_custom"
         android:layout_centerHorizontal="true"
         android:layout_margin="40dp"
         android:layout_below="@+id/stopButton"
-        android:background="@drawable/back_arrow"
-        />
+        android:background="@drawable/back_arrow" />
 
     <Button
         android:id="@+id/leftButton"
@@ -42,17 +41,16 @@
         android:layout_toStartOf="@+id/stopButton"
         android:layout_alignTop="@+id/stopButton"
         android:layout_marginEnd="35dp"
-        android:background="@drawable/left_arrow"
-         />
+        android:background="@drawable/left_arrow" />
+
     <Button
         android:id="@+id/rightButton"
         style="@style/layout_custom"
         android:layout_centerVertical="true"
-    android:layout_margin="35dp"
+        android:layout_margin="35dp"
 
-    android:layout_toEndOf="@+id/stopButton"
-        android:background="@drawable/right_arrow"
-        />
+        android:layout_toEndOf="@+id/stopButton"
+        android:background="@drawable/right_arrow" />
 
     <Button
         android:id="@+id/startButton"
@@ -62,11 +60,11 @@
         android:layout_alignStart="@+id/leftButton"
 
         />
+
     <Button
         android:id="@+id/overButton"
         style="@style/layout_wrap"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/rightButton"
-        android:text="@string/over"
-        />
+        android:text="@string/over" />
 </RelativeLayout>

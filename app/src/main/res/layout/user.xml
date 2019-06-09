@@ -6,14 +6,15 @@
     android:paddingLeft="@dimen/activity_left_margin"
     android:paddingRight="@dimen/activity_left_margin"
     android:paddingTop="@dimen/activity_top_margin"
-    android:paddingBottom="@dimen/activity_top_margin"
-    >
+    android:paddingBottom="@dimen/activity_top_margin">
+
     <TextView
         android:id="@+id/user_name"
         style="@style/layout_full"
         android:textSize="@dimen/activity_textSize"
 
         />
+
     <TextView
         android:id="@+id/user_id"
         android:textSize="@dimen/activity_textSize"

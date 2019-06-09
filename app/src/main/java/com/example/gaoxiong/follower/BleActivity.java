@@ -35,49 +35,22 @@ import java.util.UUID;
 
 
 public class BleActivity extends ListActivity implements PermissionInterface {
-    public BluetoothAdapter mBluetoothAdapter;
-    //    BluetoothLeScanner scanner;
     public BluetoothDevice mBluetoothDevice;
     private Button button;
     UUID Uuid;
+
 //    private BService bleService;
     //设备扫描
     private PermissionHelper mPermissionHelper;
-    List<BluetoothDevice> devices = new ArrayList<>();
-    /**
-     * gatt的集合
-     */
-    private Map<String, BluetoothGatt> mBluetoothGatts;
+    StartScan scan = StartScan.getInstance();
 
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-
-            scanner.stopScan(leCallback);
-        }
-    };
-    private Handler handler = new Handler();//import android.os.Handler;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble);
-         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-        mBluetoothGatts = new HashMap<>();
-        // 确保蓝牙在设备上可以开启(判断手机是否支持蓝牙和是否开启，没有开启则开启)
-        if ( !mBluetoothAdapter.isEnabled()) {
-            if (mBluetoothAdapter != null) {
-                mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
-            }
 
-        }
 //        启动服务
 ////        初始化并发起权限申请
         mPermissionHelper = new PermissionHelper(this, this);
@@ -86,18 +59,10 @@ public class BleActivity extends ListActivity implements PermissionInterface {
 
         button = (Button) findViewById(R.id.mButton);
         button.setOnClickListener(new ButtonListener());
+        addDeviceToList();
+        scan.scanDevice(true);
 
-//        ArrayList<HashMap<String, String>> list = new ArrayList<>();
-//        HashMap<String, String> map1 = new HashMap<>();
-//        map1.put("user_name", "蓝牙名");
-//        map1.put("user_id", "蓝牙地址");
-//        list.add(map1);
-//        SimpleAdapter simpleAdapter = new SimpleAdapter(this, list, R.layout.user,
-//                new String[]{"user_name", "user_id"}, new int[]{R.id.user_name, R.id.user_id});
-//        setListAdapter(simpleAdapter);
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
@@ -208,14 +173,15 @@ public class BleActivity extends ListActivity implements PermissionInterface {
         public void onClick(View v) {
 
             Logger.e("开始扫描");
-            scanDevice(true);
+            scan.scanDevice(true);
+            addDeviceToList();
         }
     }
 
     private void addDeviceToList() {
 
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
-        for (Iterator iterator = devices.iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = scan.devices.iterator(); iterator.hasNext(); ) {
             mBluetoothDevice = (BluetoothDevice) iterator.next();
             HashMap<String, String> map1 = new HashMap<String, String>();
 
@@ -247,7 +213,7 @@ public class BleActivity extends ListActivity implements PermissionInterface {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        BluetoothDevice bluetoothDevice = devices.get(position);
+        BluetoothDevice bluetoothDevice = scan.devices.get(position);
         Mac = bluetoothDevice.getAddress();
 //        bleService.disConnect();
 //        bleService.refreshDeviceCache(mBluetoothGatts.get(position));
@@ -265,76 +231,7 @@ public class BleActivity extends ListActivity implements PermissionInterface {
 
 
 
-    private void scanDevice(final boolean enable) {
-        BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-        if (enable) {
 
-            handler.postDelayed(runnable, 10000);
-
-            scanner.startScan(leCallback);
-        }
-
-
-
-    }
-
-    ScanCallback leCallback = new ScanCallback() {
-        //leCallback是一个回调函数，通过onScanResult()把每次搜索到的设备添加到本地。
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            super.onScanResult(callbackType, result);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                 BluetoothDevice device = result.getDevice();
-//               final  BluetoothDevice device = result.getDevice();
-                addDeviceToList();
-//                Toast.makeText(getApplicationContext(), device.getAddress(), Toast.LENGTH_SHORT).show();
-              Logger.e( "添加设备地址:"+device.getName()+device.getAddress());
-
-                if (!devices.contains(device)) {  //判断是否已经添加
-                    devices.add(device);
-//                    addDeviceToList(device.getName() + "", device.getAddress());
-//                    Logger.e("添加设备---地址:" + device.getAddress());
-                }
-
-//
-//                deviceAdapter.notifyDataSetChanged();
-            }
-        }
-
-        //批量处理搜索到的结果
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            super.onBatchScanResults(results);
-
-
-        }
-
-        @Override
-        public void onScanFailed(int errorCode) {
-            super.onScanFailed(errorCode);
-            //扫描失败返回的参数有4个
-            //errorCode=1;Fails to start scan as BLE scan with the same settings is already started by the app.
-            //errorCode=2;Fails to start scan as app cannot be registered.
-            //errorCode=3;Fails to start scan due an internal error
-            //errorCode=4;Fails to start power optimized scan as this feature is not supported.
-            switch(errorCode){
-                case 1:
-                    Logger.d("Fails to start scan as BLE scan with the same settings is already started by the app.");
-                    break;
-                case  2:
-                    Logger.d("Fails to start scan as app cannot be registered.");
-                    break;
-                case 3:
-                    Logger.d("Fails to start scan due an internal error");
-                    break;
-                case 4:
-                    Logger.d("Fails to start power optimized scan as this feature is not supported.");
-                    break;
-
-
-            }
-        }
-    };
 
 
 }

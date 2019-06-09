@@ -9,22 +9,24 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.gaoxiong.follower.ConnectActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/listLineearLayout"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/connect"
-            android:id="@+id/cButton"/>
+            android:text="@string/scan"
+            android:id="@+id/cButton" />
+
         <ListView
             android:id="@id/android:list"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
 
     </LinearLayout>

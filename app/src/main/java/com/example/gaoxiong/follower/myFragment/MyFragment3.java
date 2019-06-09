@@ -1,20 +1,40 @@
-package com.example.gaoxiong.follower;
+package com.example.gaoxiong.follower.myFragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.KeyEvent;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.example.gaoxiong.follower.BleUUID;
+import com.example.gaoxiong.follower.R;
 import com.orhanobut.logger.Logger;
 
-public class GravityActivity extends AppCompatActivity  implements SensorEventListener{
-      private boolean bool=true;
+import static android.content.Context.SENSOR_SERVICE;
+
+/**
+ * Created by Jay on 2015/8/28 0028.
+ */
+public class MyFragment3 extends Fragment  implements SensorEventListener {
+
+    public MyFragment3() {
+    }
+    View view;
+    Context context ;
+    Button button4;
+    Button button5;
+    private boolean bool=false;
     private SensorManager sensorManager;
     public float[] r = new float[9];
     //记录通过getOrientation()计算出来的方位横滚俯仰值
@@ -66,20 +86,53 @@ public class GravityActivity extends AppCompatActivity  implements SensorEventLi
                 Logger.i( "control＝" + control);
                 Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
                 intent0.putExtra("control",control);
-                sendBroadcast(intent0);
+                context.getApplicationContext().sendBroadcast(intent0);
             }
         }
     };
 
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gravity);
-        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 
     @Override
-    protected void onResume() {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+         view = inflater.inflate(R.layout.gravity_control_layout,container,false);
+        button4 = (Button)view.findViewById(R.id.button4);
+        button4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!bool){
+                    Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
+                    intent0.putExtra("control","a");
+                    context.getApplicationContext().sendBroadcast(intent0);
+                    bool = true;
+                    button4.setText("停止");
+                }else{
+                    bool = false;
+                    Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
+                    intent0.putExtra("control","c");
+                    context.getApplicationContext().sendBroadcast(intent0);
+                    button4.setText("启动");
+                }
+
+            }
+        });
+
+        sensorManager = (SensorManager)context.getSystemService(SENSOR_SERVICE);
+        Logger.e("第三个Fragment");
+
+        return view;
+    }
+
+
+    @Override
+    public void onResume() {
         super.onResume();
         //注册加速度传感器监听
         Sensor acceleSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -90,13 +143,13 @@ public class GravityActivity extends AppCompatActivity  implements SensorEventLi
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         sensorManager.unregisterListener( this);
     }
@@ -122,4 +175,5 @@ public class GravityActivity extends AppCompatActivity  implements SensorEventLi
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
 }
