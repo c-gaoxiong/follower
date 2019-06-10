@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.example.gaoxiong.follower.BleActivity;
 import com.example.gaoxiong.follower.BleUUID;
@@ -23,6 +24,8 @@ import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static com.example.gaoxiong.follower.R.color.text_yellow;
 
 /**
  * Created by Jay on 2015/8/28 0028.
@@ -91,14 +94,32 @@ public class MyFragment4 extends Fragment {
                         });
                     }
                 });
-                Button useBtn=(Button)view.findViewById(R.id.connect);
+                final Button useBtn=(Button)view.findViewById(R.id.connect);
                 useBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Logger.d("点击 ："+p);
-                        Intent intent =new Intent("android.ble.chair.control");
-                        intent.putExtra("address",str[p]);
-                        context.getApplicationContext().sendBroadcast(intent);
+                            Logger.d("点击 ："+useBtn.getText());
+
+                            if(useBtn.getText().equals("连接")) {
+                                useBtn.setText(context.getResources().getString(R.string.connecting));
+//                                useBtn.setTextColor(context.getResources().getColor(R.color.color_Green));
+//                                useBtn.setBackground(context.getResources().getDrawable(R.color.text_gray));
+                                Intent intent = new Intent("android.ble.chair.control");
+                                intent.putExtra("address", str[p]);
+                                context.getApplicationContext().sendBroadcast(intent);
+                            }
+                            if(useBtn.getText().equals(getString(R.string.connecting))){
+                                Toast.makeText(context.getApplicationContext(),"正在连接请稍等，长按断开连接",Toast.LENGTH_SHORT).show();
+                            }
+                            if(useBtn.getText().equals("断开连接")){
+                                Intent i = new Intent(BleUUID.CHAIR_CONTROL);
+                                i.putExtra("disconnect","disconnect");
+                                i.putExtra("address",str[p]);
+                                context.getApplicationContext().sendBroadcast(i);
+                                useBtn.setText("连接");
+//                                useBtn.setTextColor(context.getResources().getColor(R.color.colorWhite));
+                            }
+
                     }
 
                 });
@@ -128,6 +149,7 @@ public class MyFragment4 extends Fragment {
             String state= intent.getStringExtra("state");
             int states = Integer.valueOf(state);
             String uuid = intent.getStringExtra("uuid");
+
             if(action.equals(BleUUID.CONNECT)){
                 if(uuid!=null){
                     switch (uuid){
@@ -155,22 +177,19 @@ public class MyFragment4 extends Fragment {
       if(state==0) {
           str2[i] = "连接";
       }
-        if(state==1){
-            str2[i]="正在连接";
-        }
+
         if(state==2){
             str2[i]="断开连接";
+
         }
-        if(state==4){
-            str2[i]="正在断开";
-        }
-//        addData();
+
+        addData();
         simpleAdapter.notifyDataSetChanged();
     }
 
 
     public  void addData() {
-//        list.clear();
+        list.clear();
         for (int i = 0; i < 3; i++) {
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("user_name", str3[i]);

@@ -25,5 +25,11 @@
     <string name="stop">停止</string>
     <string name="seating">无人</string>
     <string name="state">state</string>
+    <string name="connecting">正在连接</string>
+    <string name="start_up_gravity">启动重力控制</string>
+    <string name="start_up_btn">启动按钮控制</string>
+    <string name="stop_btn">停止按钮控制</string>
+    <string name="stop_gravity">停止重力控制</string>
+
 
 </resources>

@@ -32,7 +32,13 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
     }
     View view;
     Context context ;
+    Button stopButton ;
+    Button frontButton ;
+    Button backButton ;
+    Button leftButton ;
+    Button rightButton ;
     Button button4;
+    Button button5;
     private boolean bool=false;
     private SensorManager sensorManager;
     public float[] r = new float[9];
@@ -67,7 +73,6 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                 }else {
                     y1= "0"+""+y;
                 }
-                Logger.i( String.format(getResources().getString(R.string.value),y));
                 float zAngle = (float) Math.toDegrees(values[2]);
                 int z = (int) (195-(zAngle+50)*130/100);
                 String z1;
@@ -102,26 +107,20 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
          view = inflater.inflate(R.layout.gravity_control_layout,container,false);
         button4 = (Button)view.findViewById(R.id.button4);
-        button4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        button4.setOnClickListener(clickListener);
+        button5 = (Button)view.findViewById(R.id.button5);
+        button5.setOnClickListener(clickListener);
+        stopButton = (Button)view.findViewById(R.id.stopButton);
+        frontButton = (Button)view.findViewById(R.id.frontButton);
+        backButton = (Button)view.findViewById(R.id.backButton);
+        leftButton = (Button)view.findViewById(R.id.leftButton);
+        rightButton = (Button)view.findViewById(R.id.rightButton);
 
-                if(!bool){
-                    Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
-                    intent0.putExtra("control","a");
-                    context.getApplicationContext().sendBroadcast(intent0);
-                    bool = true;
-                    button4.setText("停止");
-                }else{
-                    bool = false;
-                    Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
-                    intent0.putExtra("control","c");
-                    context.getApplicationContext().sendBroadcast(intent0);
-                    button4.setText("启动");
-                }
-
-            }
-        });
+        stopButton.setOnClickListener(clickListener );
+        frontButton.setOnClickListener(clickListener );
+        backButton.setOnClickListener(clickListener );
+        leftButton.setOnClickListener(clickListener );
+        rightButton.setOnClickListener(clickListener );
 
         sensorManager = (SensorManager)context.getSystemService(SENSOR_SERVICE);
         Logger.e("第三个Fragment");
@@ -139,6 +138,7 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
         //注册磁场传感器监听
         Sensor magSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         sensorManager.registerListener( this, magSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
     }
 
     @Override
@@ -155,6 +155,7 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+
         // 真机上获取触发的传感器类型
         if(bool)
             switch (event.sensor.getType()) {
@@ -168,11 +169,106 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     handler.sendEmptyMessage(0);
                     break;
             }
+
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+    View.OnClickListener clickListener = new View.OnClickListener(){
 
+        @Override
+        public void onClick(View v) {
+
+            switch (v.getId()){
+
+                case R.id.button4:
+
+                    if(!bool){
+                        Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
+                        intent0.putExtra("control","a");
+                        context.getApplicationContext().sendBroadcast(intent0);
+                        bool = true;
+                        button4.setText(getString(R.string.stop_gravity));
+                        button5.setText(getString(R.string.start_up_btn));
+                    }else{
+                        bool = false;
+                        Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
+                        intent0.putExtra("control","c");
+                        context.getApplicationContext().sendBroadcast(intent0);
+                        button4.setText(getString(R.string.start_up_gravity));
+                    }
+
+
+                    break;
+                case R.id.button5:
+                    if(button5.getText().equals(getString(R.string.start_up_btn))){
+                        Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
+                        intent0.putExtra("control","a");
+                        context.getApplicationContext().sendBroadcast(intent0);
+                        button5.setText(getString(R.string.stop_btn));
+                        bool = false;
+                    }else {
+                        Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
+                        intent0.putExtra("control","c");
+                        context.getApplicationContext().sendBroadcast(intent0);
+                        button5.setText(getString(R.string.start_up_btn));
+                        bool = false;
+                    }
+                    bool = false;
+                    button4.setText(context.getString(R.string.start_up_gravity));
+
+                    break;
+
+                case R.id.stopButton:
+                    String s="s";
+                    Logger.e("s");
+                    Intent intent2= new Intent(BleUUID.CHAIR_CONTROL);
+                    intent2.putExtra("control",s);
+                    context.getApplicationContext().sendBroadcast(intent2);
+                    bool = false;
+                    button4.setText(context.getString(R.string.start_up_gravity));
+                    break;
+                case R.id.leftButton:
+                    String l="l";
+                    Logger.e("l");
+                    Intent intent3 = new Intent(BleUUID.CHAIR_CONTROL);
+                    intent3.putExtra("control",l);
+                    context.getApplicationContext().sendBroadcast(intent3);
+                    bool = false;
+                    button4.setText(context.getString(R.string.start_up_gravity));
+                    break;
+                case R.id.rightButton:
+                    String r="r";
+                    Intent intent4 = new Intent(BleUUID.CHAIR_CONTROL);
+                    Logger.e("r");
+                    bool = false;
+                    button4.setText(context.getString(R.string.start_up_gravity));
+                    intent4.putExtra("control",r);
+                    context.getApplicationContext().sendBroadcast(intent4);
+                    break;
+                case R.id.frontButton:
+                    String f="f";
+                    Intent intent5 = new Intent(BleUUID.CHAIR_CONTROL);
+                    Logger.e("f");
+                    intent5.putExtra("control",f);
+                    context.getApplicationContext().sendBroadcast(intent5);
+                    bool = false;
+                    button4.setText(context.getString(R.string.start_up_gravity));
+                    break;
+                case R.id.backButton:
+                    String b="b";
+                    Intent intent7 = new Intent(BleUUID.CHAIR_CONTROL);
+                    Logger.e("b");
+                    intent7.putExtra("control",b);
+                    context.getApplicationContext().sendBroadcast(intent7);
+                    bool = false;
+                    button4.setText(context.getString(R.string.start_up_gravity));
+                    break;
+                default:break;
+            }
+        }
+
+    };
 }

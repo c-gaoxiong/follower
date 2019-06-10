@@ -1,16 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="@drawable/three"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/stopButton"
+        style="@style/layout_custom"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/frontButton"
+        android:layout_margin="50dp"
+        android:background="@drawable/stop"
+        />
 
     <Button
-        android:text="@string/start_up"
-        android:layout_width="wrap_content"
+        android:id="@+id/frontButton"
+        style="@style/layout_custom"
+        android:layout_marginTop="60dp"
+        android:layout_centerHorizontal="true"
+
+        android:background="@drawable/front_arrow" />
+    <Button
+        android:id="@+id/rightButton"
+        style="@style/layout_custom"
+        android:background="@drawable/right_arrow"
+        android:layout_toEndOf="@+id/stopButton"
+        android:layout_alignTop="@+id/stopButton"
+        />
+    <Button
+        android:id="@+id/backButton"
+        style="@style/layout_custom"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/stopButton"
+        android:background="@drawable/back_arrow"
+        />
+
+    <Button
+        android:id="@+id/leftButton"
+        style="@style/layout_custom"
+        android:layout_toStartOf="@+id/stopButton"
+        android:layout_alignTop="@+id/stopButton"
+        android:background="@drawable/left_arrow" />
+
+    <Button
+        android:text="@string/start_up_gravity"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="117dp"
-        android:textSize="20sp"
+        android:layout_marginBottom="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="40dp"
+        android:textSize="18sp"
+        android:background="@drawable/check_border"
+        android:textColor="@color/text_yellow"
         android:id="@+id/button4" />
+
+    <Button
+        android:text="@string/start_up_btn"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:background="@drawable/check_border"
+        android:textColor="@color/text_yellow"
+        android:id="@+id/button5"
+        android:layout_alignBaseline="@+id/button4"
+        android:layout_alignBottom="@+id/button4"
+        android:layout_alignStart="@+id/leftButton" />
+
+
 </RelativeLayout>

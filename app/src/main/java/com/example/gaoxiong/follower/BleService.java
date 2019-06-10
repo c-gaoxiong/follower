@@ -28,7 +28,7 @@ public class BleService extends Service {
 
     BleGattClass bleGattClass ;
 
-    HashMap<String,BleGattClass> hashMap = new HashMap<>();
+   public  static HashMap<String,BleGattClass> hashMap = new HashMap<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -81,16 +81,18 @@ public class BleService extends Service {
 
             String ctr = intent.getStringExtra("data");
             String start_up= intent.getStringExtra("start");
-
+            Logger.d("BleService--Received>>>>>>>>"+ctr);
+            Logger.d("BleService--Received>>>>>>>>"+start_up);
             if(start_up!=null) {
+                Logger.d(start_up);
                 if (start_up.equals("开始跟随")) {
                     start = true;
-                } else if (start_up.equals("停止跟随") || start_up.equals("停止")) {
+                } else if (start_up.equals("停止跟随")) {
                     start = false;
                 }
             }
             if(start) {
-                if (ctr != null) {
+                if (ctr != null&&ctr.length()>=7) {
                     String ctr1 = ctr.substring(0, 7);
                     Logger.d(ctr);
 
@@ -123,8 +125,8 @@ public class BleService extends Service {
                         }
 
                     }else {
-//                        new BleGattClass(getApplicationContext(),BleUUID.CHAIR_ADDRESS).connectBluetooth();
-                        MyToast("未连接设备");
+                        new BleGattClass(getApplicationContext(),BleUUID.CHAIR_ADDRESS).connectBluetooth();
+//                        MyToast("未连接设备");
                     }
 
 
@@ -144,19 +146,19 @@ public class BleService extends Service {
                     }else {
                         switch (hashMap.get(address).getState()){
                             case 0:
-                                MyToast("未连接");
-                                Logger.d("未连接");
+//                                MyToast("未连接");
+//                                Logger.d("未连接");
                                 hashMap.get(address).connectBluetooth();
                                 break;
                             case 1:
-                                MyToast("正在连接");
+//                                MyToast("正在连接");
                                 break;
                             case 2 :
                                 Logger.d("已连接");
-                                MyToast("已连接");
+//                                MyToast("已连接");
                                 break;
                             case 3:
-                                MyToast("正在断开");
+//                                MyToast("正在断开");
                                 break;
                             case 4:
                                 MyToast("未搜索到该设备蓝牙");
@@ -171,7 +173,7 @@ public class BleService extends Service {
                             hashMap.get(address).disConnect();
                             MyToast("断开连接："+address);
                         }else {
-                            MyToast("未连接");
+//                            MyToast("未连接");
                             Logger.d("未连接");
                         }
 

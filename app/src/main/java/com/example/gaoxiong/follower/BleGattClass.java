@@ -98,18 +98,18 @@ void init(){
             } else if (newState == BluetoothProfile.STATE_CONNECTED) {
                 handler.post(new Runnable() {
                     public void run() {
-                        Toast.makeText(context, "连接成功:" + uuid, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(context, "连接成功:" + uuid, Toast.LENGTH_LONG).show();
 
                     }
                 });
-                Logger.e("连接成功");
+                Logger.e("连接成功："+uuid);
                 gatt.discoverServices();
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Logger.e("断开连接的状态");
                 handler.post(new Runnable() {
                     public void run() {
-                        Toast.makeText(context, "断开连接:" + uuid, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(context, "断开连接:" + uuid, Toast.LENGTH_LONG).show();
 
                     }
                 });
@@ -214,7 +214,7 @@ void init(){
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt,  BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            Logger.d("onCharacteristicWrite" + new String(characteristic.getValue()));
+            Logger.d("onCharacteristicWrite>>>>>" + new String(characteristic.getValue()));
 
         }
 

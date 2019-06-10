@@ -20,7 +20,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/scan"
-            android:id="@+id/cButton" />
+            android:id="@+id/cButton"
+            android:background="@drawable/btn_bg_s"
+            />
 
         <ListView
             android:id="@id/android:list"

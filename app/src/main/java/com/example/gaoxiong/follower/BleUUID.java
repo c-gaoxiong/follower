@@ -20,11 +20,12 @@ public class BleUUID {
     public final static String HEART_RATE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
     public static final UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString(HEART_RATE_MEASUREMENT);
     public static final String CHAIR_ADDRESS= "7C:01:0A:64:77:20";
-    public static final String RADAR_ADDRESS= "3C:2D:B7:85:D9:B9";
+    public static final String RADAR_ADDRESS= "7C:01:0A:3A:F5:FA";
     public static final String CUSION_ADDRESS= "D0:39:72:D9:B3:A4";
 
     public static final String CHAIR_CONTROL = "android.ble.chair.control";
     public static final String RECEIVED = "android.ble.chair.received";
     public static final String CONNECT = "android.ble.chair.connected";
+    public static final String BTN_CHANGE = "android.ble.chair.changed";
 
 }

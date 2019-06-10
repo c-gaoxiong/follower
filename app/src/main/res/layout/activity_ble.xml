@@ -22,12 +22,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/scan"
-            android:id="@+id/mButton" />
+            android:id="@+id/mButton"
+            android:background="@drawable/btn_bg_s"/>
 
         <ListView
             android:id="@id/android:list"
             android:scrollbars="vertical"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

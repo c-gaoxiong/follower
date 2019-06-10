@@ -25,24 +25,24 @@ import com.orhanobut.logger.Logger;
 public class MyFragment2 extends Fragment {
 TextView textView;
     Context context;
-    ReceivedReceiver1 receivedReceiver1;
+    ReceivedReceiver2 receivedReceiver2;
     public MyFragment2() {
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        receivedReceiver1 = new ReceivedReceiver1();
-        IntentFilter intent1 = new IntentFilter();
-        intent1.addAction(BleUUID.RECEIVED);
-        context.getApplicationContext().registerReceiver(receivedReceiver1,intent1);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fg_content,container,false);
         textView = (TextView)view.findViewById(R.id.textView2);
-
+        receivedReceiver2 = new ReceivedReceiver2();
+        IntentFilter intent1 = new IntentFilter();
+        intent1.addAction(BleUUID.RECEIVED);
+        context.getApplicationContext().registerReceiver(receivedReceiver2,intent1);
         Logger.e("第二个Fragment");
         return view;
     }
@@ -56,24 +56,22 @@ TextView textView;
     @Override
     public void onDestroy() {
         super.onDestroy();
-        context.getApplicationContext().unregisterReceiver(receivedReceiver1);
+        context.getApplicationContext().unregisterReceiver(receivedReceiver2);
     }
 
-    public class ReceivedReceiver1 extends BroadcastReceiver {
+    public class ReceivedReceiver2 extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             String ctr2 = intent.getStringExtra("data");
-            if(ctr2!=null){
+            if(ctr2!=null&&ctr2.length()>=2){
                 String s = ctr2.substring(0,2);
                 Intent i = new Intent(BleUUID.CHAIR_CONTROL);
-
-
 
                 switch (s){
                     case "s0":
                         textView.setText("正坐");
-                        textView.setTextColor(context.getResources().getColor(R.color.colorGree));
+                        textView.setTextColor(context.getResources().getColor(R.color.color_Green));
                         i.putExtra("control","a");
                         context.getApplicationContext().sendBroadcast(i);
 
@@ -98,9 +96,9 @@ TextView textView;
                         break;
                     case "s4":
                         textView.setText("无人");
-                        Intent i1 = new Intent(BleUUID.RECEIVED);
-                        i1.putExtra("start",R.string.follower);
-                        context.getApplicationContext().sendBroadcast(i1);
+//                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
+//                        i1.putExtra("start",getString(R.string.follower));
+//                        context.getApplicationContext().sendBroadcast(i1);
                         break;
                     default:break;
 
@@ -109,9 +107,8 @@ TextView textView;
             }
 
 
-            }
-
         }
 
+    }
 
 }

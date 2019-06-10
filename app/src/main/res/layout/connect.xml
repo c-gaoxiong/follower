@@ -7,26 +7,33 @@
     <TextView
         android:id="@+id/user1_name"
         style="@style/layout_wrap"
-        android:textSize="@dimen/activity_textSize"
-        android:textColor="@color/text_gray"
+        android:textSize="20sp"
+        android:textColor="@color/colorYellow"
         android:layout_marginLeft="6dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="3dp"
         />
 
     <TextView
+        android:layout_marginTop="3dp"
         android:id="@+id/user1_id"
         android:textSize="@dimen/activity_textSize"
         style="@style/layout_wrap"
-        android:textColor="@color/text_gray"
+        android:textColor="@color/bg_black"
         android:layout_marginLeft="6dp"
+        android:layout_marginBottom="3dp"
+
         />
 
     <Button
+        android:layout_marginTop="3dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/connect"
         android:layout_marginLeft="6dp"
+        android:layout_marginBottom="6dp"
         android:textColor="@color/colorWhite"
-        android:background="@color/colorPrimaryDark"
+        android:background="@drawable/btn_bg_white"
         android:textSize="20sp" />
 
 </LinearLayout>
