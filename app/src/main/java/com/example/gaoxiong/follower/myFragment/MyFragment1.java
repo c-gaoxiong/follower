@@ -116,7 +116,6 @@ Context context;
                     intent2.putExtra("start",s);
                     context.getApplicationContext().sendBroadcast(intent2);
 
-
                     break;
                 default:break;
             }

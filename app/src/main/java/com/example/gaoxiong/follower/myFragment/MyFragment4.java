@@ -1,11 +1,12 @@
 package com.example.gaoxiong.follower.myFragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -32,13 +33,14 @@ public class MyFragment4 extends Fragment {
     }
     String[] str = new String[]{BleUUID.CHAIR_ADDRESS,BleUUID.RADAR_ADDRESS,BleUUID.CUSION_ADDRESS};
     String[] str2 = new String[]{"连接","连接","连接"};
+    String[] str3 = new String[]{ "智能轮椅", "激光雷达", "智能坐垫"  };
     View view;
     Button scan;
     Context context;
     ListView listView;
     ArrayList<HashMap<String, String>> list = new ArrayList<>();
     SimpleAdapter simpleAdapter;
-
+    ForthReceiver forthReceiver;
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -59,9 +61,8 @@ public class MyFragment4 extends Fragment {
         });
         listView = (ListView)view.findViewById(R.id.ble_list);
         Logger.e( "第四个Fragment");
-
-
         listView.setAdapter(simpleAdapter);
+
         return view;
 
     }
@@ -101,28 +102,82 @@ public class MyFragment4 extends Fragment {
                     }
 
                 });
+
+                forthReceiver =new ForthReceiver();
+                IntentFilter intentFilter = new IntentFilter();
+                intentFilter.addAction(BleUUID.CONNECT);
+                context.getApplicationContext().registerReceiver(forthReceiver,intentFilter);
                 return view;
             }
 
         };
 
     }
-    public  void addData(){
-    HashMap<String, String> map1 = new HashMap<>();
-    map1.put("user_name", "智能轮椅");
-    map1.put("user_id",str[0]);
-    map1.put("connect",str2[0]);
-    list.add(map1);
-    HashMap<String, String> map2 = new HashMap<>();
-    map2.put("user_name", "激光雷达");
-    map2.put("user_id",str[1]);
-    map2.put("connect",str2[1]);
-    list.add(map2);
-    HashMap<String, String> map3= new HashMap<>();
-    map3.put("user_name", "智能坐垫");
-    map3.put("user_id",str[2]);
-    map3.put("connect",str2[2]);
-    list.add(map3);
-}
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        context.getApplicationContext().unregisterReceiver(forthReceiver);
+    }
+
+    public class  ForthReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            String state= intent.getStringExtra("state");
+            int states = Integer.valueOf(state);
+            String uuid = intent.getStringExtra("uuid");
+            if(action.equals(BleUUID.CONNECT)){
+                if(uuid!=null){
+                    switch (uuid){
+                        case BleUUID.CHAIR_ADDRESS:
+                            bluetoothState(0,states);
+                            break;
+                        case BleUUID.RADAR_ADDRESS:
+                            bluetoothState(1,states);
+                            break;
+                        case BleUUID.CUSION_ADDRESS:
+                            bluetoothState(2,states);
+                            break;
+                        default:break;
+                    }
+
+                }
+
+            }
+
+
+
+        }
+    }
+    public void bluetoothState(int i,int state){
+      if(state==0) {
+          str2[i] = "连接";
+      }
+        if(state==1){
+            str2[i]="正在连接";
+        }
+        if(state==2){
+            str2[i]="断开连接";
+        }
+        if(state==4){
+            str2[i]="正在断开";
+        }
+//        addData();
+        simpleAdapter.notifyDataSetChanged();
+    }
+
+
+    public  void addData() {
+//        list.clear();
+        for (int i = 0; i < 3; i++) {
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put("user_name", str3[i]);
+            hashMap.put("user_id", str[i]);
+            hashMap.put("connect", str2[i]);
+            list.add(hashMap);
+        }
+    }
 
 }

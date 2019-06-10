@@ -78,36 +78,42 @@ void init(){
 
     public BluetoothGattCallback callback = new BluetoothGattCallback() {
         @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, final int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             state = newState;
             Handler handler = new Handler(Looper.getMainLooper());
-
+            final Intent intent =new Intent(BleUUID.CONNECT);
+            intent.putExtra("uuid",uuid);
+            intent.putExtra("state",String.valueOf(newState));
+            context.getApplicationContext().sendBroadcast(intent);
             if (newState == BluetoothProfile.STATE_CONNECTING) {
                 Logger.e("正在连接");
                 handler.post(new Runnable() {
                     public void run() {
                         Toast.makeText(context, "正在连接:" + uuid, Toast.LENGTH_LONG).show();
+
+
                     }
                 });
             } else if (newState == BluetoothProfile.STATE_CONNECTED) {
                 handler.post(new Runnable() {
                     public void run() {
                         Toast.makeText(context, "连接成功:" + uuid, Toast.LENGTH_LONG).show();
+
                     }
                 });
                 Logger.e("连接成功");
-
                 gatt.discoverServices();
+
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Logger.e("断开连接的状态");
                 handler.post(new Runnable() {
                     public void run() {
                         Toast.makeText(context, "断开连接:" + uuid, Toast.LENGTH_LONG).show();
+
                     }
                 });
-//                bluetoothGatt.close();
-//                connectBluetooth();
+
             }
 
         }
@@ -120,10 +126,7 @@ void init(){
                 Logger.d("onServicesDiscovered--" + "发现服务");
 //                获取全部服务， gatt.getServices();
                 List<BluetoothGattService> bluetoothGattServices = gatt.getServices();
-                Logger.d(bluetoothGattServices.size());
-                Logger.d(gatt.getServices().get(0));
-                Logger.d(gatt.getServices().get(1));
-                Logger.d(gatt.getServices().get(2));
+
 //获取对应的BleUUID.UUID_BLUE_SERVICE服务
                 bluetoothGattService = gatt
                         .getService(BleUUID.UUID_BLUE_SERVICE);

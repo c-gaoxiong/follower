@@ -33,7 +33,6 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
     View view;
     Context context ;
     Button button4;
-    Button button5;
     private boolean bool=false;
     private SensorManager sensorManager;
     public float[] r = new float[9];

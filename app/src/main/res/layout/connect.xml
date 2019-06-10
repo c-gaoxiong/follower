@@ -9,7 +9,7 @@
         style="@style/layout_wrap"
         android:textSize="@dimen/activity_textSize"
         android:textColor="@color/text_gray"
-
+        android:layout_marginLeft="6dp"
         />
 
     <TextView
@@ -17,7 +17,7 @@
         android:textSize="@dimen/activity_textSize"
         style="@style/layout_wrap"
         android:textColor="@color/text_gray"
-
+        android:layout_marginLeft="6dp"
         />
 
     <Button

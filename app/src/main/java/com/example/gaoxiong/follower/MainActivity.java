@@ -164,6 +164,7 @@ boolean b=false;
                 break;
             case R.id.rb_setting:
                 vpager.setCurrentItem(PAGE_FOUR);
+                startScan.scanDevice(true);
                 break;
         }
     }

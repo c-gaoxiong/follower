@@ -24,5 +24,6 @@
     <string name="stop_follower">停止跟随</string>
     <string name="stop">停止</string>
     <string name="seating">无人</string>
+    <string name="state">state</string>
 
 </resources>
