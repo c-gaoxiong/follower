@@ -40,7 +40,7 @@ public class BleService extends Service {
     public void onCreate() {
 
         super.onCreate();
-
+Logger.d("进入服务>>>>>>>>onCreate");
 
         startScan.scanDevice(true);
         IntentFilter intentFilter = new IntentFilter();

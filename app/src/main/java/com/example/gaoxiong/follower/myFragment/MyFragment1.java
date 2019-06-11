@@ -1,11 +1,13 @@
 package com.example.gaoxiong.follower.myFragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.gaoxiong.follower.BleService;
 import com.example.gaoxiong.follower.BleUUID;
+import com.example.gaoxiong.follower.MainActivity;
 import com.example.gaoxiong.follower.R;
 import com.orhanobut.logger.Logger;
 
@@ -30,7 +33,7 @@ public class MyFragment1 extends Fragment {
     Button button;
     Button button2;
     Button button3;
-
+    Activity activity;
 
     Context context;
     ReceivedReceiver1 receivedReceiver1;
@@ -42,8 +45,15 @@ public class MyFragment1 extends Fragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity = activity;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
        view = inflater.inflate(R.layout.followerlayout,container,false);
+        view.getId();
         Logger.e("第一个Fragment");
         button = (Button)view.findViewById(R.id.button);//启动
         button2 = (Button)view.findViewById(R.id.button2);//跟随
@@ -90,6 +100,11 @@ public class MyFragment1 extends Fragment {
                         Logger.d("停止跟随");
                         context.getApplicationContext().sendBroadcast(intent1);
 
+                    }
+                    if(string.equals("停止")){
+                        button.setText("停止");
+                    }else if(string.equals("启动")){
+                        button.setText("启动");
                     }
 
                 }
@@ -168,40 +183,62 @@ public class MyFragment1 extends Fragment {
 
                     break;
                 case R.id.button:
-                    if(BleService.hashMap.get(BleUUID.CHAIR_ADDRESS).getState()==2){
-                        if(button.getText().equals(context.getString(R.string.start_up))){
-                            Logger.e("a");
-                            Logger.e(context.getString(R.string.start_up));
+                    if(BleService.hashMap.get(BleUUID.CHAIR_ADDRESS)!=null){
+                        if(BleService.hashMap.get(BleUUID.CHAIR_ADDRESS).getState()==2){
+                            if(button.getText().equals(context.getString(R.string.start_up))){
+                                Logger.e("a");
+                                Logger.e(context.getString(R.string.start_up));
 
-                            intent0.putExtra("control","a");
-                            context.getApplicationContext().sendBroadcast(intent0);
-                            button.setText(context.getString(R.string.stop));
+                                intent0.putExtra("control","a");
+                                context.getApplicationContext().sendBroadcast(intent0);
+                                button.setText(context.getString(R.string.stop));
 
-                        }else{
-                            Logger.e("停止：c");
-                            intent0.putExtra("control","c");
-                            context.getApplicationContext().sendBroadcast(intent0);
-                            button.setText(getString(R.string.start_up));
-                            Intent intent10 = new Intent(BleUUID.BTN_CHANGE);
-                            intent10.putExtra("start",getString(R.string.stop_follower));
-                            context.getApplicationContext().sendBroadcast(intent10);
+                            }else{
+                                Logger.e("停止：c");
+                                intent0.putExtra("control","c");
+                                context.getApplicationContext().sendBroadcast(intent0);
+                                button.setText(getString(R.string.start_up));
+                                Intent intent10 = new Intent(BleUUID.BTN_CHANGE);
+                                intent10.putExtra("start",getString(R.string.stop_follower));
+                                context.getApplicationContext().sendBroadcast(intent10);
+
+                            }//end  if(button.getText().equals(context.getString(R.string.start_up)))
+                        }
+                        else {
+                            Toast.makeText(context.getApplicationContext(),"请连接智能轮椅",Toast.LENGTH_SHORT).show();
+
+                            changeToAnotherFragment();
 
                         }
+
                     }else {
                         Toast.makeText(context.getApplicationContext(),"请连接智能轮椅",Toast.LENGTH_SHORT).show();
+
+                        changeToAnotherFragment();
                     }
+
 
 
                     break;
                 case R.id.button2:
-                    if(  BleService.hashMap.get(BleUUID.RADAR_ADDRESS).getState()==2){
-                        String s = (String) button2.getText();
-                        Intent intent2 = new Intent(BleUUID.BTN_CHANGE);
-                        intent2.putExtra("start",s);
-                        context.getApplicationContext().sendBroadcast(intent2);
+                    if(BleService.hashMap.get(BleUUID.RADAR_ADDRESS)!=null){
+                        if(BleService.hashMap.get(BleUUID.RADAR_ADDRESS).getState()==2){
+                            String s = (String) button2.getText();
+                            Intent intent2 = new Intent(BleUUID.BTN_CHANGE);
+                            intent2.putExtra("start",s);
+                            context.getApplicationContext().sendBroadcast(intent2);
+                        }else {
+                            Toast.makeText(context.getApplicationContext(),"请连接激光雷达",Toast.LENGTH_SHORT).show();
+                            changeToAnotherFragment();
+
+                        }
+
                     }else {
                         Toast.makeText(context.getApplicationContext(),"请连接激光雷达",Toast.LENGTH_SHORT).show();
+
+                        changeToAnotherFragment();
                     }
+
 
 
 
@@ -212,5 +249,14 @@ public class MyFragment1 extends Fragment {
 
 
     };
+    private void changeToAnotherFragment(){
+//        (MainActivity)getActivity().getViewPager().setCurrentItem(3);
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.getViewPager().setCurrentItem(3);
+//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+////        FragmentManager fragmentManager = getActivity().getFragmentManager();
+//        Fragment fragment = new MyFragment4();
+//        fragmentManager.beginTransaction().replace(R.id.fragment1,fragment).commit();
+    }
 
 }

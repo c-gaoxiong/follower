@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.gaoxiong.follower.myFragment.MyFragmentPagerAdapter;
+import com.orhanobut.logger.Logger;
 
 
 /**
@@ -39,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+
         };
     }
 
@@ -60,6 +62,18 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     }
     private void initViews() {
         //已经拥有所需权限，可以放心操作任何东西了
+        //初始化并发起权限申请
+
+
+//        if ( !mBluetoothAdapter.isEnabled()) {
+//            if (mBluetoothAdapter != null) {
+//                mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
+//            }
+//
+//        }
+        Logger.d("进入>>>>>initView()");
+
+
     }
 
     //UI Objects
@@ -69,8 +83,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private RadioButton rb_message;
     private RadioButton rb_better;
     private RadioButton rb_setting;
-    private ViewPager vpager;
-boolean b=false;
+    public static ViewPager vpager;
     private MyFragmentPagerAdapter mAdapter;
     private PermissionHelper mPermissionHelper;
     BluetoothAdapter mBluetoothAdapter;
@@ -88,39 +101,38 @@ boolean b=false;
         setContentView(R.layout.activity_main);
         Intent intent11 = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(intent11,1);
-        //初始化并发起权限申请
-        mPermissionHelper = new PermissionHelper(this, this);
-        mPermissionHelper.requestPermissions();
         bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
-        if ( !mBluetoothAdapter.isEnabled()) {
-            if (mBluetoothAdapter != null) {
-                mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
-            }
+        mPermissionHelper = new PermissionHelper(this, this);
+        mPermissionHelper.requestPermissions();
 
+
+        if(mBluetoothAdapter.enable()){
+            ///　/*隐式打开蓝牙*/
+            init();
         }
-        startScan =StartScan.getInstance();
-        startScan.setmBluetoothAdapter(mBluetoothAdapter);
-        startScan.scanDevice(true);
-       
+
+
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
         bindViews();
         rb_channel.setChecked(true);
 
-        Intent intent = new Intent(MainActivity.this, BleService.class);
-        startService(intent);
 
+
+    }
+   void  init(){
+       Logger.d("进入>>>>>init()");
+       startScan =StartScan.getInstance();
+       startScan.setmBluetoothAdapter(mBluetoothAdapter);
+       startScan.scanDevice(true);
+       Intent intent = new Intent(MainActivity.this, BleService.class);
+       startService(intent);
     }
     @Override
     protected void onResume() {
         super.onResume();
 
-        if ( !mBluetoothAdapter.isEnabled()) {
-            if (mBluetoothAdapter != null) {
-                mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
-            }
 
-        }
 
 
 
@@ -164,10 +176,11 @@ boolean b=false;
                 break;
             case R.id.rb_setting:
                 vpager.setCurrentItem(PAGE_FOUR);
-                startScan.scanDevice(true);
+//                startScan.scanDevice(true);
                 break;
         }
     }
+
 
 
     //重写ViewPager页面切换的处理方法
@@ -198,5 +211,8 @@ boolean b=false;
                     break;
             }
         }
+    }
+    public  ViewPager getViewPager(){
+        return vpager;
     }
 }

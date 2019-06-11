@@ -189,6 +189,9 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                         Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
                         intent0.putExtra("control","a");
                         context.getApplicationContext().sendBroadcast(intent0);
+                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
+                        i1.putExtra("start",context.getResources().getString(R.string.stop_follower));
+                        context.getApplicationContext().sendBroadcast(i1);
                         bool = true;
                         button4.setText(getString(R.string.stop_gravity));
                         button5.setText(getString(R.string.start_up_btn));
@@ -208,12 +211,19 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                         intent0.putExtra("control","a");
                         context.getApplicationContext().sendBroadcast(intent0);
                         button5.setText(getString(R.string.stop_btn));
+
+                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
+                        i1.putExtra("start","停止");
+                        context.getApplicationContext().sendBroadcast(i1);
                         bool = false;
                     }else {
                         Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
                         intent0.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(intent0);
                         button5.setText(getString(R.string.start_up_btn));
+                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
+                        i1.putExtra("start","启动");
+                        context.getApplicationContext().sendBroadcast(i1);
                         bool = false;
                     }
                     bool = false;
