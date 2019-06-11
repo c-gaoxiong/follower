@@ -19,13 +19,13 @@ import android.widget.Toast;
 
 import com.example.gaoxiong.follower.BleActivity;
 import com.example.gaoxiong.follower.BleUUID;
+import com.example.gaoxiong.follower.MainActivity;
 import com.example.gaoxiong.follower.R;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static com.example.gaoxiong.follower.R.color.text_yellow;
+import static com.example.gaoxiong.follower.MainActivity.mBluetoothAdapter;
 
 /**
  * Created by Jay on 2015/8/28 0028.
@@ -44,6 +44,7 @@ public class MyFragment4 extends Fragment {
     ArrayList<HashMap<String, String>> list = new ArrayList<>();
     SimpleAdapter simpleAdapter;
     ForthReceiver forthReceiver;
+//    MainActivity mainActivity;
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -65,7 +66,7 @@ public class MyFragment4 extends Fragment {
         listView = (ListView)view.findViewById(R.id.ble_list);
         Logger.e( "第四个Fragment");
         listView.setAdapter(simpleAdapter);
-
+//        mainActivity.startScan.scanDevice(true);
         return view;
 
     }
@@ -99,26 +100,30 @@ public class MyFragment4 extends Fragment {
                     @Override
                     public void onClick(View view) {
                             Logger.d("点击 ："+useBtn.getText());
-
-                            if(useBtn.getText().equals("连接")) {
-                                useBtn.setText(context.getResources().getString(R.string.connecting));
+                            if(mBluetoothAdapter.isEnabled()){
+                                if(useBtn.getText().equals("连接")) {
+                                    useBtn.setText(context.getResources().getString(R.string.connecting));
 //                                useBtn.setTextColor(context.getResources().getColor(R.color.color_Green));
 //                                useBtn.setBackground(context.getResources().getDrawable(R.color.text_gray));
-                                Intent intent = new Intent("android.ble.chair.control");
-                                intent.putExtra("address", str[p]);
-                                context.getApplicationContext().sendBroadcast(intent);
-                            }
-                            if(useBtn.getText().equals(getString(R.string.connecting))){
-                                Toast.makeText(context.getApplicationContext(),"正在连接请稍等，长按断开连接",Toast.LENGTH_SHORT).show();
-                            }
-                            if(useBtn.getText().equals("断开连接")){
-                                Intent i = new Intent(BleUUID.CHAIR_CONTROL);
-                                i.putExtra("disconnect","disconnect");
-                                i.putExtra("address",str[p]);
-                                context.getApplicationContext().sendBroadcast(i);
-                                useBtn.setText("连接");
+                                    Intent intent = new Intent("android.ble.chair.control");
+                                    intent.putExtra("address", str[p]);
+                                    context.getApplicationContext().sendBroadcast(intent);
+                                }
+                                if(useBtn.getText().equals(getString(R.string.connecting))){
+                                    Toast.makeText(context.getApplicationContext(),"正在连接请稍等，长按断开连接",Toast.LENGTH_SHORT).show();
+                                }
+                                if(useBtn.getText().equals("断开连接")){
+                                    Intent i = new Intent(BleUUID.CHAIR_CONTROL);
+                                    i.putExtra("disconnect","disconnect");
+                                    i.putExtra("address",str[p]);
+                                    context.getApplicationContext().sendBroadcast(i);
+                                    useBtn.setText("连接");
 //                                useBtn.setTextColor(context.getResources().getColor(R.color.colorWhite));
+                                }
+                            }else {
+                                mBluetoothAdapter.enable();
                             }
+
 
                     }
 
@@ -128,6 +133,7 @@ public class MyFragment4 extends Fragment {
                 IntentFilter intentFilter = new IntentFilter();
                 intentFilter.addAction(BleUUID.CONNECT);
                 context.getApplicationContext().registerReceiver(forthReceiver,intentFilter);
+//                mainActivity = (MainActivity)getActivity();
                 return view;
             }
 

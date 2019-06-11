@@ -2,21 +2,11 @@ package com.example.gaoxiong.follower;
 
 import android.Manifest;
 import android.app.ListActivity;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
-import android.content.Context;
+
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -29,9 +19,9 @@ import com.orhanobut.logger.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+
+import static com.example.gaoxiong.follower.MainActivity.mBluetoothAdapter;
 
 
 public class BleActivity extends ListActivity implements PermissionInterface {
@@ -59,8 +49,20 @@ public class BleActivity extends ListActivity implements PermissionInterface {
 
         button = (Button) findViewById(R.id.mButton);
         button.setOnClickListener(new ButtonListener());
+
         addDeviceToList();
-        scan.scanDevice(true);
+        if ( !mBluetoothAdapter.isEnabled()) {
+            if (mBluetoothAdapter != null) {
+                mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
+            }
+
+        }
+        if(mBluetoothAdapter.isEnabled()){
+            ///　/*隐式打开蓝牙*/
+            scan.scanDevice(true);
+
+        }
+
 
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -104,7 +106,9 @@ public class BleActivity extends ListActivity implements PermissionInterface {
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.BLUETOOTH
         };
     }
 

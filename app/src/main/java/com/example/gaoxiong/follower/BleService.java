@@ -40,9 +40,9 @@ public class BleService extends Service {
     public void onCreate() {
 
         super.onCreate();
-Logger.d("进入服务>>>>>>>>onCreate");
+        Logger.d("进入服务>>>>>>>>onCreate");
 
-        startScan.scanDevice(true);
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BleUUID.CHAIR_CONTROL);
         myReceiver = new MyReceiver();
@@ -56,7 +56,8 @@ Logger.d("进入服务>>>>>>>>onCreate");
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        startScan.scanDevice(true);
+        Logger.d("后台服务扫描>>>>>");
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -75,6 +76,9 @@ Logger.d("进入服务>>>>>>>>onCreate");
             }
         });
     }
+
+
+
     public class ReceivedReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {

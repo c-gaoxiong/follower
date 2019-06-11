@@ -3,18 +3,21 @@ package com.example.gaoxiong.follower;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gaoxiong.follower.myFragment.MyFragmentPagerAdapter;
 import com.orhanobut.logger.Logger;
+import static android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED;
 
 
 /**
@@ -22,7 +25,7 @@ import com.orhanobut.logger.Logger;
  */
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener,
         ViewPager.OnPageChangeListener,PermissionInterface {
-    private StartScan startScan;
+    public StartScan startScan;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -86,32 +89,40 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     public static ViewPager vpager;
     private MyFragmentPagerAdapter mAdapter;
     private PermissionHelper mPermissionHelper;
-    BluetoothAdapter mBluetoothAdapter;
+   public static BluetoothAdapter mBluetoothAdapter;
     BluetoothManager bluetoothManager;
+    BleOpenedReceiver bleOpenedReceiver;
+
     //几个代表页面的常量
+    private int REQUEST_ENABLE_BT = 1;
     public static final int PAGE_ONE = 0;
     public static final int PAGE_TWO = 1;
     public static final int PAGE_THREE = 2;
     public static final int PAGE_FOUR = 3;
-
+    String[] str = new String[]{BleUUID.CHAIR_ADDRESS,BleUUID.RADAR_ADDRESS,BleUUID.CUSION_ADDRESS};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent11 = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(intent11,1);
+
         bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
         mPermissionHelper = new PermissionHelper(this, this);
         mPermissionHelper.requestPermissions();
 
+        if ( !mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 
-        if(mBluetoothAdapter.enable()){
-            ///　/*隐式打开蓝牙*/
+        }else {
             init();
         }
+        bleOpenedReceiver = new BleOpenedReceiver();
+        IntentFilter intentFilter2 = new IntentFilter();
+        intentFilter2.addAction(ACTION_STATE_CHANGED);
 
+        registerReceiver(bleOpenedReceiver,intentFilter2);
 
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
         bindViews();
@@ -120,35 +131,57 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
 
     }
-   void  init(){
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_OK) {
+                // 蓝牙已经开启
+                Logger.d("蓝牙已经开启完毕");
+
+
+            } else {
+                Toast.makeText(this,"请打开蓝牙",Toast.LENGTH_LONG).show();
+            }
+        }
+
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+
+    }
+
+    void  init(){
        Logger.d("进入>>>>>init()");
        startScan =StartScan.getInstance();
        startScan.setmBluetoothAdapter(mBluetoothAdapter);
        startScan.scanDevice(true);
        Intent intent = new Intent(MainActivity.this, BleService.class);
        startService(intent);
+
+       Intent intent2 = new Intent("android.ble.chair.control");
+       for(int i =0;i < 3;i++){
+           intent2.putExtra("address", str[i]);
+           sendBroadcast(intent2);
+           Logger.d("sendBroadcast>>>>>>"+str[i]);
+       }
+
+
+
+
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-
-
-
-
-
-    }
 
     @Override
     protected void onDestroy() {
-
+        unregisterReceiver(bleOpenedReceiver);
         Intent intent = new Intent(MainActivity.this, BleService.class);
         stopService(intent);
         super.onDestroy();
     }
 
     private void bindViews() {
-//        txt_topbar = (TextView) findViewById(R.id.txt_topbar);
         rg_tab_bar = (RadioGroup) findViewById(R.id.rg_tab_bar);
         rb_channel = (RadioButton) findViewById(R.id.rb_channel);
         rb_message = (RadioButton) findViewById(R.id.rb_message);
@@ -214,5 +247,33 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     }
     public  ViewPager getViewPager(){
         return vpager;
+    }
+
+    public class  BleOpenedReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String stateExtra = BluetoothAdapter.EXTRA_STATE;
+            int state = intent.getIntExtra(stateExtra, -1);
+            switch (state) {
+                case BluetoothAdapter.STATE_TURNING_ON:    // 蓝牙打开中
+                    Logger.d("蓝牙打开中");
+                    break;
+                case BluetoothAdapter.STATE_ON:
+                    Logger.d(" 蓝牙打开完成");
+                    // 蓝牙打开完成
+                    init();
+                    break;
+                case BluetoothAdapter.STATE_TURNING_OFF:  // 蓝牙关闭中
+
+                    break;
+                case BluetoothAdapter.STATE_OFF:          // 蓝牙关闭完成
+
+                    break;
+            }
+
+
+
+
+        }
     }
 }
