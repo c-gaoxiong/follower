@@ -18,6 +18,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.example.gaoxiong.follower.BleActivity;
+import com.example.gaoxiong.follower.BleService;
 import com.example.gaoxiong.follower.BleUUID;
 import com.example.gaoxiong.follower.MainActivity;
 import com.example.gaoxiong.follower.R;
@@ -26,6 +27,7 @@ import com.orhanobut.logger.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import static com.example.gaoxiong.follower.MainActivity.mBluetoothAdapter;
+import static com.example.gaoxiong.follower.myFragment.MyFragment1.mainActivity;
 
 /**
  * Created by Jay on 2015/8/28 0028.
@@ -44,7 +46,7 @@ public class MyFragment4 extends Fragment {
     ArrayList<HashMap<String, String>> list = new ArrayList<>();
     SimpleAdapter simpleAdapter;
     ForthReceiver forthReceiver;
-//    MainActivity mainActivity;
+    private long time=0;
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -59,14 +61,16 @@ public class MyFragment4 extends Fragment {
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mainActivity. vibrator.vibrate(60);
                 Intent intent = new Intent(context.getApplicationContext(),BleActivity.class);
                 startActivity(intent);
             }
         });
         listView = (ListView)view.findViewById(R.id.ble_list);
         Logger.e( "第四个Fragment");
+
         listView.setAdapter(simpleAdapter);
-//        mainActivity.startScan.scanDevice(true);
+        updateData();
         return view;
 
     }
@@ -80,55 +84,70 @@ public class MyFragment4 extends Fragment {
 
                 final int p=position;
                 final View view=super.getView(position, convertView, parent);
-                view.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-                    @Override
-                    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                        menu.add(0,0,0,"断开连接").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                Intent i = new Intent(BleUUID.CHAIR_CONTROL);
-                                i.putExtra("disconnect","disconnect");
-                                i.putExtra("address",str[p]);
-                                context.getApplicationContext().sendBroadcast(i);
-                                return true;
-                            }
-                        });
-                    }
-                });
+
                 final Button useBtn=(Button)view.findViewById(R.id.connect);
                 useBtn.setOnClickListener(new View.OnClickListener() {
+
                     @Override
                     public void onClick(View view) {
+                        mainActivity. vibrator.vibrate(60);
                             Logger.d("点击 ："+useBtn.getText());
                             if(mBluetoothAdapter.isEnabled()){
                                 if(useBtn.getText().equals("连接")) {
                                     useBtn.setText(context.getResources().getString(R.string.connecting));
 //                                useBtn.setTextColor(context.getResources().getColor(R.color.color_Green));
 //                                useBtn.setBackground(context.getResources().getDrawable(R.color.text_gray));
-                                    Intent intent = new Intent("android.ble.chair.control");
+                                    Intent intent = new Intent(BleUUID.CHAIR_CONTROL);
                                     intent.putExtra("address", str[p]);
                                     context.getApplicationContext().sendBroadcast(intent);
                                 }
                                 if(useBtn.getText().equals(getString(R.string.connecting))){
-                                    Toast.makeText(context.getApplicationContext(),"正在连接请稍等，长按断开连接",Toast.LENGTH_SHORT).show();
+                                    if((System.currentTimeMillis() - time)>2000){
+
+                                        Toast.makeText(context.getApplicationContext(),"再次点击，停止连接",Toast.LENGTH_SHORT).show();
+                                        time = System.currentTimeMillis();
+                                    }else {
+                                        Intent i = new Intent(BleUUID.CHAIR_CONTROL);
+                                        i.putExtra("disconnect","disconnect");
+                                        i.putExtra("address",str[p]);
+                                        context.getApplicationContext().sendBroadcast(i);
+                                        str2[p] = "连接";
+                                        useBtn.setText("连接");
+                                    }
                                 }
                                 if(useBtn.getText().equals("断开连接")){
                                     Intent i = new Intent(BleUUID.CHAIR_CONTROL);
                                     i.putExtra("disconnect","disconnect");
                                     i.putExtra("address",str[p]);
                                     context.getApplicationContext().sendBroadcast(i);
+                                    str2[p] = "连接";
                                     useBtn.setText("连接");
 //                                useBtn.setTextColor(context.getResources().getColor(R.color.colorWhite));
                                 }
                             }else {
                                 mBluetoothAdapter.enable();
                             }
-
-
                     }
 
                 });
-
+                view.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                    @Override
+                    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                        menu.add(0,0,0,"断开连接").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                mainActivity. vibrator.vibrate(60);
+                                Intent i = new Intent(BleUUID.CHAIR_CONTROL);
+                                i.putExtra("disconnect","disconnect");
+                                i.putExtra("address",str[p]);
+                                context.getApplicationContext().sendBroadcast(i);
+                                useBtn.setText("连接");
+                                str2[p] = "连接";
+                                return true;
+                            }
+                        });
+                    }
+                });
                 forthReceiver =new ForthReceiver();
                 IntentFilter intentFilter = new IntentFilter();
                 intentFilter.addAction(BleUUID.CONNECT);
@@ -192,6 +211,24 @@ public class MyFragment4 extends Fragment {
         addData();
         simpleAdapter.notifyDataSetChanged();
     }
+
+    public void updateData(){
+
+        if( BleService.hashMap.get(BleUUID.CHAIR_ADDRESS)!=null){
+            bluetoothState(0,BleService.hashMap.get(BleUUID.CHAIR_ADDRESS).getState());
+
+        }
+        if(BleService.hashMap.get(BleUUID.RADAR_ADDRESS)!=null){
+            bluetoothState(1,BleService.hashMap.get(BleUUID.RADAR_ADDRESS).getState());
+
+
+        }
+        if(BleService.hashMap.get(BleUUID.CUSION_ADDRESS)!=null){
+            bluetoothState(2,BleService.hashMap.get(BleUUID.CUSION_ADDRESS).getState());
+        }
+
+    }
+
 
 
     public  void addData() {

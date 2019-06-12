@@ -1,6 +1,5 @@
 package com.example.gaoxiong.follower.myFragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -11,17 +10,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.gaoxiong.follower.BleService;
 import com.example.gaoxiong.follower.BleUUID;
 import com.example.gaoxiong.follower.R;
 import com.orhanobut.logger.Logger;
 
 import static android.content.Context.SENSOR_SERVICE;
+import static com.example.gaoxiong.follower.myFragment.MyFragment1.mainActivity;
 
 /**
  * Created by Jay on 2015/8/28 0028.
@@ -110,6 +111,10 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
         button4.setOnClickListener(clickListener);
         button5 = (Button)view.findViewById(R.id.button5);
         button5.setOnClickListener(clickListener);
+        if(BleUUID.chair_state.equals("停止")){
+            button5.setText("停止按钮控制");
+        }
+
         stopButton = (Button)view.findViewById(R.id.stopButton);
         frontButton = (Button)view.findViewById(R.id.frontButton);
         backButton = (Button)view.findViewById(R.id.backButton);
@@ -180,10 +185,26 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
 
         @Override
         public void onClick(View v) {
+            mainActivity. vibrator.vibrate(60);
+            if(BleService.hashMap.get(BleUUID.CHAIR_ADDRESS)!=null) {
+                if (BleService.hashMap.get(BleUUID.CHAIR_ADDRESS).getState() == 2) {
+
+                }else {
+                    mainActivity.getViewPager().setCurrentItem(3);
+                    Toast.makeText(context.getApplicationContext(),"请连接智能轮椅",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }else {
+                mainActivity.getViewPager().setCurrentItem(3);
+                Toast.makeText(context.getApplicationContext(),"请连接智能轮椅",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
 
             switch (v.getId()){
 
                 case R.id.button4:
+
 
                     if(!bool){
                         Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
@@ -194,13 +215,15 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                         context.getApplicationContext().sendBroadcast(i1);
                         bool = true;
                         button4.setText(getString(R.string.stop_gravity));
-                        button5.setText(getString(R.string.start_up_btn));
+                        BleUUID.chair_state = "停止";
+                        button5.setText(getString(R.string.stop_btn));
                     }else{
                         bool = false;
                         Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
                         intent0.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(intent0);
                         button4.setText(getString(R.string.start_up_gravity));
+
                     }
 
 
@@ -211,19 +234,15 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                         intent0.putExtra("control","a");
                         context.getApplicationContext().sendBroadcast(intent0);
                         button5.setText(getString(R.string.stop_btn));
-
-                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
-                        i1.putExtra("start","停止");
-                        context.getApplicationContext().sendBroadcast(i1);
+                        button4.setText(context.getString(R.string.start_up_gravity));
+                         BleUUID.chair_state = "停止";
                         bool = false;
                     }else {
                         Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
                         intent0.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(intent0);
                         button5.setText(getString(R.string.start_up_btn));
-                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
-                        i1.putExtra("start","启动");
-                        context.getApplicationContext().sendBroadcast(i1);
+                        BleUUID.chair_state = "启动";
                         bool = false;
                     }
                     bool = false;
@@ -239,6 +258,8 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     context.getApplicationContext().sendBroadcast(intent2);
                     bool = false;
                     button4.setText(context.getString(R.string.start_up_gravity));
+                    button5.setText(getString(R.string.stop_btn));
+                    BleUUID.chair_state = "停止";
                     break;
                 case R.id.leftButton:
                     String l="l";
@@ -248,6 +269,8 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     context.getApplicationContext().sendBroadcast(intent3);
                     bool = false;
                     button4.setText(context.getString(R.string.start_up_gravity));
+                    button5.setText(getString(R.string.stop_btn));
+                    BleUUID.chair_state = "停止";
                     break;
                 case R.id.rightButton:
                     String r="r";
@@ -257,6 +280,8 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     button4.setText(context.getString(R.string.start_up_gravity));
                     intent4.putExtra("control",r);
                     context.getApplicationContext().sendBroadcast(intent4);
+                    button5.setText(getString(R.string.stop_btn));
+                    BleUUID.chair_state = "停止";
                     break;
                 case R.id.frontButton:
                     String f="f";
@@ -265,6 +290,8 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     intent5.putExtra("control",f);
                     context.getApplicationContext().sendBroadcast(intent5);
                     bool = false;
+                    button5.setText(getString(R.string.stop_btn));
+                    BleUUID.chair_state = "停止";
                     button4.setText(context.getString(R.string.start_up_gravity));
                     break;
                 case R.id.backButton:
@@ -274,6 +301,8 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     intent7.putExtra("control",b);
                     context.getApplicationContext().sendBroadcast(intent7);
                     bool = false;
+                    button5.setText(getString(R.string.stop_btn));
+                    BleUUID.chair_state = "停止";
                     button4.setText(context.getString(R.string.start_up_gravity));
                     break;
                 default:break;

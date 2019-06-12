@@ -8,9 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -56,28 +58,13 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     @Override
     public void requestPermissionsSuccess() {
 //权限请求用户已经全部允许
-        initViews();
     }
 
     @Override
     public void requestPermissionsFail() {
 
     }
-    private void initViews() {
-        //已经拥有所需权限，可以放心操作任何东西了
-        //初始化并发起权限申请
 
-
-//        if ( !mBluetoothAdapter.isEnabled()) {
-//            if (mBluetoothAdapter != null) {
-//                mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
-//            }
-//
-//        }
-        Logger.d("进入>>>>>initView()");
-
-
-    }
 
     //UI Objects
 //    private TextView txt_topbar;
@@ -92,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
    public static BluetoothAdapter mBluetoothAdapter;
     BluetoothManager bluetoothManager;
     BleOpenedReceiver bleOpenedReceiver;
-
+    public  Vibrator vibrator;
+    private long exitTime = 0;
     //几个代表页面的常量
     private int REQUEST_ENABLE_BT = 1;
     public static final int PAGE_ONE = 0;
@@ -111,13 +99,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         mPermissionHelper = new PermissionHelper(this, this);
         mPermissionHelper.requestPermissions();
 
-        if ( !mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 
-        }else {
-            init();
-        }
+
         bleOpenedReceiver = new BleOpenedReceiver();
         IntentFilter intentFilter2 = new IntentFilter();
         intentFilter2.addAction(ACTION_STATE_CHANGED);
@@ -127,9 +110,13 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
         bindViews();
         rb_channel.setChecked(true);
+        if ( !mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 
-
-
+        }else {
+            init();
+        }
     }
 
     @Override
@@ -153,10 +140,13 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     }
 
     void  init(){
-       Logger.d("进入>>>>>init()");
+
+
+        Logger.d("进入>>>>>init()");
        startScan =StartScan.getInstance();
        startScan.setmBluetoothAdapter(mBluetoothAdapter);
-       startScan.scanDevice(true);
+        startScan.setContext(getApplicationContext());
+//       startScan.scanDevice(true);
        Intent intent = new Intent(MainActivity.this, BleService.class);
        startService(intent);
 
@@ -167,11 +157,28 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
            Logger.d("sendBroadcast>>>>>>"+str[i]);
        }
 
-
-
-
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            exit();
+            return true ;
+        }
+
+
+        return super.onKeyDown(keyCode, event);
+
+    }
+    public void exit(){
+        if((System.currentTimeMillis() - exitTime)>2000){
+
+            Toast.makeText(getApplicationContext(),"再次点击，退出应用",Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        }else {
+                System.exit(0);
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -182,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     }
 
     private void bindViews() {
+        vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
         rg_tab_bar = (RadioGroup) findViewById(R.id.rg_tab_bar);
         rb_channel = (RadioButton) findViewById(R.id.rb_channel);
         rb_message = (RadioButton) findViewById(R.id.rb_message);
@@ -190,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         rg_tab_bar.setOnCheckedChangeListener(this);
 
         vpager = (ViewPager) findViewById(R.id.vpager);
+        vpager.getBackground().setAlpha(127);
         vpager.setAdapter(mAdapter);
         vpager.setCurrentItem(0);
         vpager.addOnPageChangeListener(this);
@@ -197,8 +206,10 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        vibrator.vibrate(60);
         switch (checkedId) {
             case R.id.rb_channel:
+
                 vpager.setCurrentItem(PAGE_ONE);
                 break;
             case R.id.rb_message:
@@ -264,7 +275,9 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     init();
                     break;
                 case BluetoothAdapter.STATE_TURNING_OFF:  // 蓝牙关闭中
-
+                    Intent intent1 = new Intent(MainActivity.this, BleService.class);
+                    stopService(intent1);
+                    Logger.d("蓝牙关闭中");
                     break;
                 case BluetoothAdapter.STATE_OFF:          // 蓝牙关闭完成
 

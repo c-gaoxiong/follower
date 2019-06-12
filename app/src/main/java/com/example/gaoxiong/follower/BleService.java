@@ -92,6 +92,8 @@ public class BleService extends Service {
                 if (start_up.equals("开始跟随")) {
                     start = true;
                 } else if (start_up.equals("停止跟随")) {
+
+
                     start = false;
                 }
             }
@@ -107,6 +109,10 @@ public class BleService extends Service {
                         sendBroadcast(i);
                     }
                 }
+            }else {
+                Intent i = new Intent(BleUUID.CHAIR_CONTROL);
+                i.putExtra("control","c");
+                context.getApplicationContext().sendBroadcast(i);
             }
 
         }
@@ -129,53 +135,35 @@ public class BleService extends Service {
                         }
 
                     }else {
-                        new BleGattClass(getApplicationContext(),BleUUID.CHAIR_ADDRESS).connectBluetooth();
-//                        MyToast("未连接设备");
-                    }
+//                        new BleGattClass(getApplicationContext(),BleUUID.CHAIR_ADDRESS).connectBluetooth();
+                        MyToast("未连接轮椅");
+                    }//end .get(BleUUID.CHAIR_ADDRESS)!=null)
 
 
-                }
+                }//end    if (control!=null) {
 
                 if (address != null) {
-                    Logger.d(address);
+
                     if(hashMap.get(address)==null){
-                        if(startScan.address.contains(address)){
                             bleGattClass = new BleGattClass(getApplicationContext(),address);
                             bleGattClass.connectBluetooth();
                             hashMap.put(address,bleGattClass);
-                        }else {
-                            MyToast("未扫描到设备");
-                        }
-
+                        Logger.d(" ----连接-----"+address);
                     }else {
-                        switch (hashMap.get(address).getState()){
-                            case 0:
-//                                MyToast("未连接");
-//                                Logger.d("未连接");
-                                hashMap.get(address).connectBluetooth();
-                                break;
-                            case 1:
-//                                MyToast("正在连接");
-                                break;
-                            case 2 :
-                                Logger.d("已连接");
-//                                MyToast("已连接");
-                                break;
-                            case 3:
-//                                MyToast("正在断开");
-                                break;
-                            case 4:
-                                MyToast("未搜索到该设备蓝牙");
-                            default:break;
 
+//                            bleGattClass.disConnect();
+                            bleGattClass.connectBluetooth();
                         }
+
                     }
-                }
+
+
                 if(disconnect!=null){
                     if(address!=null){
                         if((disconnect.equals("disconnect"))&&hashMap.get(address)!=null){
                             hashMap.get(address).disConnect();
-                            MyToast("断开连接："+address);
+//                            MyToast("断开连接："+address);
+                            Logger.d("断开连接"+address);
                         }else {
 //                            MyToast("未连接");
                             Logger.d("未连接");

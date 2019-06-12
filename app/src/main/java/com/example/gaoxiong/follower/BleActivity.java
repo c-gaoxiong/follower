@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -19,21 +20,17 @@ import com.orhanobut.logger.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.UUID;
-
 import static com.example.gaoxiong.follower.MainActivity.mBluetoothAdapter;
 
 
 public class BleActivity extends ListActivity implements PermissionInterface {
     public BluetoothDevice mBluetoothDevice;
     private Button button;
-    UUID Uuid;
 
-//    private BService bleService;
     //设备扫描
     private PermissionHelper mPermissionHelper;
     StartScan scan = StartScan.getInstance();
-
+    private Vibrator vibrator;
     private GoogleApiClient client;
 
     @Override
@@ -57,11 +54,7 @@ public class BleActivity extends ListActivity implements PermissionInterface {
             }
 
         }
-        if(mBluetoothAdapter.isEnabled()){
-            ///　/*隐式打开蓝牙*/
-            scan.scanDevice(true);
 
-        }
 
 
 
@@ -143,6 +136,12 @@ public class BleActivity extends ListActivity implements PermissionInterface {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
+    }
+
+    @Override
     public void onStop() {
         super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
 // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -176,10 +175,18 @@ public class BleActivity extends ListActivity implements PermissionInterface {
         @Override
         public void onClick(View v) {
 
-            Logger.e("开始扫描");
-            scan.scanDevice(true);
-            addDeviceToList();
-        }
+            if(mBluetoothAdapter.isEnabled()){
+                Logger.e("开始扫描");
+                scan.devices.clear();
+                scan.scanDevice(true);
+                addDeviceToList();
+            }else {
+                mBluetoothAdapter.enable();
+
+                }
+            }
+
+
     }
 
     private void addDeviceToList() {
@@ -219,18 +226,16 @@ public class BleActivity extends ListActivity implements PermissionInterface {
         super.onListItemClick(l, v, position, id);
         BluetoothDevice bluetoothDevice = scan.devices.get(position);
         Mac = bluetoothDevice.getAddress();
-//        bleService.disConnect();
-//        bleService.refreshDeviceCache(mBluetoothGatts.get(position));
-//        bleService.initialize();
-//        bleService.connect(bluetoothDevice,Mac);
-//        bleService.sendOrder("a");
-
-        Intent intent =new Intent("android.ble.chair.control");
-        intent.putExtra("address",Mac.toString());
-        sendBroadcast(intent);
-
+      vibrator.vibrate(60);
+        if(mBluetoothAdapter.isEnabled()){
+            Intent intent =new Intent("android.ble.chair.control");
+            intent.putExtra("address",Mac.toString());
+            sendBroadcast(intent);
+        }else {
+            mBluetoothAdapter.enable();
+        }
         Logger.e("点击地址>>>>>>>：" + Mac);
-
+        finish();
     }
 
 

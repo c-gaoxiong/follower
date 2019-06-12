@@ -74,6 +74,7 @@ TextView textView;
                         textView.setTextColor(context.getResources().getColor(R.color.color_Green));
                         i.putExtra("control","a");
                         context.getApplicationContext().sendBroadcast(i);
+                        BleUUID.chair_state = "停止";
 
                         break;
                     case "s1":
@@ -81,21 +82,25 @@ TextView textView;
                         textView.setTextColor(context.getResources().getColor(R.color.colorRed));
                         i.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(i);
+                        BleUUID.chair_state = "启动";
                         break;
                     case "s2":
                         textView.setText("左倾");
                         textView.setTextColor(context.getResources().getColor(R.color.colorRed));
                         i.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(i);
+                        BleUUID.chair_state = "启动";
                         break;
                     case "s3":
                         textView.setText("右倾");
                         textView.setTextColor(context.getResources().getColor(R.color.colorRed));
                         i.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(i);
+                        BleUUID.chair_state = "启动";
                         break;
                     case "s4":
                         textView.setText("无人");
+                        BleUUID.chair_state = "启动";
 //                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
 //                        i1.putExtra("start",getString(R.string.follower));
 //                        context.getApplicationContext().sendBroadcast(i1);

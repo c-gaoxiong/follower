@@ -8,7 +8,6 @@
 
 
     <TextView
-        android:text="@string/seating"
         android:layout_width="100sp"
         android:layout_height="50sp"
         android:layout_centerVertical="true"

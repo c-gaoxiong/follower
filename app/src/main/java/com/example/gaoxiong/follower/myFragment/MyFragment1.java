@@ -34,7 +34,7 @@ public class MyFragment1 extends Fragment {
     Button button2;
     Button button3;
     Activity activity;
-
+    public static MainActivity mainActivity;
     Context context;
     ReceivedReceiver1 receivedReceiver1;
     FirstReceiver firstReceiver;
@@ -53,15 +53,21 @@ public class MyFragment1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
        view = inflater.inflate(R.layout.followerlayout,container,false);
-        view.getId();
+        View view1 = view.findViewById(R.id.linear1);
+        view1.getBackground().setAlpha(135);
+
+
         Logger.e("第一个Fragment");
         button = (Button)view.findViewById(R.id.button);//启动
+        button.setText(BleUUID.chair_state);
         button2 = (Button)view.findViewById(R.id.button2);//跟随
-        button3 = (Button)view.findViewById(R.id.button3);//停止
+        button2.setText(BleUUID.radar_state);
+        button3 = (Button)view.findViewById(R.id.button3);//人体状态
+
         button2.setOnClickListener(clickListener);
         button.setOnClickListener(clickListener);
         button3.setOnClickListener(clickListener);
-
+         mainActivity = (MainActivity)getActivity();
 
         return view;
     }
@@ -92,6 +98,7 @@ public class MyFragment1 extends Fragment {
                     if(string.equals(context.getResources().getString(R.string.follower))){
                         button2.setText(context.getResources().getString(R.string.stop_follower));
                         intent1.putExtra("start","开始跟随");
+                        BleUUID.radar_state =context.getResources().getString(R.string.stop_follower);
                         Logger.d("开始跟随");
                         context.getApplicationContext().sendBroadcast(intent1);
                     }else {
@@ -100,11 +107,7 @@ public class MyFragment1 extends Fragment {
                         Logger.d("停止跟随");
                         context.getApplicationContext().sendBroadcast(intent1);
 
-                    }
-                    if(string.equals("停止")){
-                        button.setText("停止");
-                    }else if(string.equals("启动")){
-                        button.setText("启动");
+                        BleUUID.radar_state = getString(R.string.follower);
                     }
 
                 }
@@ -136,32 +139,43 @@ public class MyFragment1 extends Fragment {
                         button3.setTextColor(context.getResources().getColor(R.color.color_Green));
                         i.putExtra("control","a");
                         context.getApplicationContext().sendBroadcast(i);
-
+                        BleUUID.chair_state = "停止";
+                        button.setText("停止");
+                        Logger.d("正坐");
                         break;
                     case "s1":
                         button3.setText("前倾");
+                        Logger.d("前倾");
                         button3.setTextColor(context.getResources().getColor(R.color.colorRed));
                         i.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(i);
+                        BleUUID.chair_state = "启动";
+                        button.setText("启动");
                         break;
                     case "s2":
                         button3.setText("左倾");
                         button3.setTextColor(context.getResources().getColor(R.color.colorRed));
                         i.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(i);
+                        Logger.d("左倾");
+                        BleUUID.chair_state = "启动";
+                        button.setText("启动");
                         break;
                     case "s3":
                         button3.setText("右倾");
                         button3.setTextColor(context.getResources().getColor(R.color.colorRed));
                         i.putExtra("control","c");
                         context.getApplicationContext().sendBroadcast(i);
+                        Logger.d("右倾");
+                        BleUUID.chair_state = "启动";
+                        button.setText("启动");
                         break;
                     case "s4":
                         button3.setText("无人");
                         Logger.d("无人");
-//                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
-//                        i1.putExtra("start",context.getResources().getString(R.string.follower));
-//                        context.getApplicationContext().sendBroadcast(i1);
+                        BleUUID.chair_state = "启动";
+                        button.setText("启动");
+
                         break;
                     default:break;
 
@@ -177,6 +191,7 @@ public class MyFragment1 extends Fragment {
     View.OnClickListener clickListener = new View.OnClickListener(){
         @Override
         public void onClick(View v) {
+            mainActivity. vibrator.vibrate(60);
             Intent intent0 = new Intent(BleUUID.CHAIR_CONTROL);
             switch (v.getId()) {
                 case R.id.button3:
@@ -192,15 +207,18 @@ public class MyFragment1 extends Fragment {
                                 intent0.putExtra("control","a");
                                 context.getApplicationContext().sendBroadcast(intent0);
                                 button.setText(context.getString(R.string.stop));
+                                BleUUID.chair_state = "停止";
 
                             }else{
                                 Logger.e("停止：c");
                                 intent0.putExtra("control","c");
                                 context.getApplicationContext().sendBroadcast(intent0);
                                 button.setText(getString(R.string.start_up));
+
                                 Intent intent10 = new Intent(BleUUID.BTN_CHANGE);
                                 intent10.putExtra("start",getString(R.string.stop_follower));
                                 context.getApplicationContext().sendBroadcast(intent10);
+                                BleUUID.chair_state = "启动";
 
                             }//end  if(button.getText().equals(context.getString(R.string.start_up)))
                         }
@@ -217,16 +235,28 @@ public class MyFragment1 extends Fragment {
                         changeToAnotherFragment();
                     }
 
-
-
                     break;
                 case R.id.button2:
-                    if(BleService.hashMap.get(BleUUID.RADAR_ADDRESS)!=null){
+                    if(BleService.hashMap.get(BleUUID.RADAR_ADDRESS)!=null&&BleService.hashMap.get(BleUUID.CHAIR_ADDRESS)!=null){
                         if(BleService.hashMap.get(BleUUID.RADAR_ADDRESS).getState()==2){
+                            if(BleService.hashMap.get(BleUUID.CHAIR_ADDRESS).getState()==0){
+                                Toast.makeText(context.getApplicationContext(),"请连接智能轮椅",Toast.LENGTH_SHORT).show();
+                                changeToAnotherFragment();
+                                return;
+                            }
+
+                            intent0.putExtra("control","a");
+                            context.getApplicationContext().sendBroadcast(intent0);
+
                             String s = (String) button2.getText();
                             Intent intent2 = new Intent(BleUUID.BTN_CHANGE);
                             intent2.putExtra("start",s);
                             context.getApplicationContext().sendBroadcast(intent2);
+
+                            intent0.putExtra("control","a");
+                            context.getApplicationContext().sendBroadcast(intent0);
+                            button.setText(context.getString(R.string.stop));
+                            BleUUID.chair_state = "停止";
                         }else {
                             Toast.makeText(context.getApplicationContext(),"请连接激光雷达",Toast.LENGTH_SHORT).show();
                             changeToAnotherFragment();
@@ -249,9 +279,8 @@ public class MyFragment1 extends Fragment {
 
 
     };
-    private void changeToAnotherFragment(){
-//        (MainActivity)getActivity().getViewPager().setCurrentItem(3);
-        MainActivity mainActivity = (MainActivity)getActivity();
+    public void changeToAnotherFragment(){
+
         mainActivity.getViewPager().setCurrentItem(3);
 //        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 ////        FragmentManager fragmentManager = getActivity().getFragmentManager();

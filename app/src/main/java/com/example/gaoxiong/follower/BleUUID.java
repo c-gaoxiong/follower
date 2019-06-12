@@ -1,12 +1,14 @@
 package com.example.gaoxiong.follower;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
  * Created by gaoxiong on 2018/7/30.
  */
 
-public class BleUUID {
+public  class BleUUID {
+    BleUUID(){};
 
     //手机发送数据给手环
     public final static UUID UUID_BLUE_WRITE = UUID
@@ -20,12 +22,22 @@ public class BleUUID {
     public final static String HEART_RATE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
     public static final UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString(HEART_RATE_MEASUREMENT);
     public static final String CHAIR_ADDRESS= "7C:01:0A:64:77:20";
-    public static final String RADAR_ADDRESS= "7C:01:0A:3A:F5:FA";
+    public static final String RADAR_ADDRESS= "3C:2D:B7:85:D9:B9";
     public static final String CUSION_ADDRESS= "C8:FD:19:87:AF:F8";
+    public  static  HashMap<String, String> map = new HashMap<String, String>() {
+        {
+            put(CHAIR_ADDRESS, "智能轮椅");
+           put(RADAR_ADDRESS, "激光雷达");
+            put(CUSION_ADDRESS, "智能坐垫");
+        }
+    };
 
     public static final String CHAIR_CONTROL = "android.ble.chair.control";
     public static final String RECEIVED = "android.ble.chair.received";
     public static final String CONNECT = "android.ble.chair.connected";
     public static final String BTN_CHANGE = "android.ble.chair.changed";
+    public static  String chair_state = "启动";
+    public static  String radar_state = "开始跟随";
+
 
 }

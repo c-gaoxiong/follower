@@ -20,19 +20,21 @@ import com.orhanobut.logger.Logger;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.gaoxiong.follower.BleUUID.*;
+
 
 public class BleGattClass {
     private String uuid = null;
     private BluetoothAdapter bluetoothAdapter = null;
     private BluetoothDevice bluetoothDevice = null;
     private BluetoothGatt bluetoothGatt = null;
-//    private BluetoothGattCharacteristic bluetoothGattCharacteristic = null;
     private BluetoothManager bluetoothManager;
     private Context context;
     private BluetoothGattService bluetoothGattService;
     private BluetoothGattCharacteristic characteristicWrite;
     private BluetoothGattDescriptor descriptor;
     private int state = 0;
+    BleGattClass(){}
 
     BleGattClass( Context context){
         this.context = context;
@@ -43,37 +45,48 @@ public class BleGattClass {
         this.context = context;
         init();
     }
-void init(){
-    bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-    bluetoothAdapter = bluetoothManager.getAdapter();
+    void init(){
+        bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothAdapter = bluetoothManager.getAdapter();
 
 
-    bluetoothDevice = bluetoothAdapter.getRemoteDevice(uuid);
+    }
+public String getUuidName(String string){
+
+    return BleUUID.map.get(string);
 }
 
+//    private Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//         if(state == 0){
+//             disConnect();
+//             Logger.d("断开连接");
+//         }
+//        }
+//    };
+//    private Handler handler = new Handler();
+
+
+
+
     void connectBluetooth() {
+        bluetoothDevice = bluetoothAdapter.getRemoteDevice(uuid);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-                if (bluetoothGatt == null){
-                    if(bluetoothDevice!=null){
+                    if(bluetoothDevice!=null) {
+
                         bluetoothGatt = bluetoothDevice.connectGatt(context, false, callback);
                         Logger.e("执行了连接的操作");
-                    }else {
-                        state = 4;
                     }
 
-                }else {
-                    bluetoothGatt = bluetoothDevice.connectGatt(context, false, callback);
-                }
 
             }
         }).start();
 
-//      if (bluetoothGatt == null)
-//          bluetoothGatt = bluetoothDevice.connectGatt(context, false, callback);
-//          Logger.e("执行了连接的操作");
     }
 
     public BluetoothGattCallback callback = new BluetoothGattCallback() {
@@ -82,7 +95,7 @@ void init(){
             super.onConnectionStateChange(gatt, status, newState);
             state = newState;
             Handler handler = new Handler(Looper.getMainLooper());
-            final Intent intent =new Intent(BleUUID.CONNECT);
+            final Intent intent =new Intent(CONNECT);
             intent.putExtra("uuid",uuid);
             intent.putExtra("state",String.valueOf(newState));
             context.getApplicationContext().sendBroadcast(intent);
@@ -91,25 +104,24 @@ void init(){
                 handler.post(new Runnable() {
                     public void run() {
                         Toast.makeText(context, "正在连接:" + uuid, Toast.LENGTH_LONG).show();
-
-
                     }
                 });
             } else if (newState == BluetoothProfile.STATE_CONNECTED) {
                 handler.post(new Runnable() {
                     public void run() {
-//                        Toast.makeText(context, "连接成功:" + uuid, Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(context, "成功连接" + getUuidName(uuid), Toast.LENGTH_LONG).show();
                     }
                 });
-                Logger.e("连接成功："+uuid);
+                Logger.e("成功连接"+uuid);
                 gatt.discoverServices();
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                Logger.e("断开连接的状态");
+                bluetoothGatt.close();
+                bluetoothGatt = null;
+                Logger.e("已断开连接>>>>>"+uuid);
                 handler.post(new Runnable() {
                     public void run() {
-//                        Toast.makeText(context, "断开连接:" + uuid, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "已断开连接:" + uuid, Toast.LENGTH_LONG).show();
 
                     }
                 });
@@ -129,9 +141,9 @@ void init(){
 
 //获取对应的BleUUID.UUID_BLUE_SERVICE服务
                 bluetoothGattService = gatt
-                        .getService(BleUUID.UUID_BLUE_SERVICE);
-                characteristicWrite = bluetoothGattService.getCharacteristic(BleUUID.UUID_BLUE_WRITE);
-                setCharacteristicNotification(gatt.getServices().get(2).getCharacteristic(BleUUID.UUID_BLUE_WRITE), true);
+                        .getService(UUID_BLUE_SERVICE);
+                characteristicWrite = bluetoothGattService.getCharacteristic(UUID_BLUE_WRITE);
+                setCharacteristicNotification(gatt.getServices().get(2).getCharacteristic(UUID_BLUE_WRITE), true);
 //
                 gatt.getService(UUID.randomUUID());
                 for (BluetoothGattService bluetoothGattService :
@@ -207,14 +219,14 @@ void init(){
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            broadcastUpdate(BleUUID.RECEIVED, characteristic);
+            broadcastUpdate(RECEIVED, characteristic);
             Logger.d("onCharacteristicChanged>>>>>>" + new String(characteristic.getValue()));
         }
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt,  BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            Logger.d("onCharacteristicWrite>>>>>" + new String(characteristic.getValue()));
+            Logger.d("onCharacteristicWrite>>>>>.....。。。。>>>>>>" + new String(characteristic.getValue()));
 
         }
 
@@ -232,7 +244,7 @@ void init(){
         Logger.d("setCharacteristicNotification", "setCharacteristicNotification");
         bluetoothGatt.setCharacteristicNotification(characteristic, enabled);
         descriptor = characteristic
-                .getDescriptor(BleUUID.UUID_NOTIFY);
+                .getDescriptor(UUID_NOTIFY);
         if (descriptor != null) {
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             bluetoothGatt.writeDescriptor(descriptor);
@@ -250,9 +262,10 @@ void init(){
     public boolean disConnect() {
         if (bluetoothGatt != null) {
             bluetoothGatt.disconnect();
-            bluetoothGatt.close();
+//            bluetoothGatt.close();
+            bluetoothDevice = null;
             Logger.e( "执行了断开连接");
-            bluetoothGatt = null;
+//            bluetoothGatt = null;
             return true;
         }
 

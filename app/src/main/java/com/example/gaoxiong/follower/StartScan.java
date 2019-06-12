@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import com.orhanobut.logger.Logger;
@@ -14,7 +16,10 @@ import java.util.List;
 
 public class StartScan {
     private BluetoothAdapter mBluetoothAdapter;
-    private StartScan(){}
+    Context context;
+     StartScan(){
+
+    }
     public  static  StartScan getInstance(){
         return  SingletonHolder.sInstance;
     }
@@ -24,16 +29,29 @@ public class StartScan {
     public void setmBluetoothAdapter(BluetoothAdapter mBluetoothAdapter){
         this.mBluetoothAdapter = mBluetoothAdapter;
     }
-
+    public void setContext(Context context){
+    this.context = context ;
+}
    static List<BluetoothDevice> devices = new ArrayList<>();
    static List<String> address = new ArrayList<>();
+    static ArrayList aotuConnect = new ArrayList(){
+        {
+            add(BleUUID.CHAIR_ADDRESS);
+            add(BleUUID.CUSION_ADDRESS);
+            add(BleUUID.RADAR_ADDRESS);
+
+        }
+    };
+
 
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-
+        if(scanner!=null){
             scanner.stopScan(leCallback);
+        }
+
         }
     };
     private Handler handler = new Handler();
@@ -64,6 +82,11 @@ public class StartScan {
                 if (!devices.contains(device)) {  //判断是否已经添加
                     devices.add(device);
                     address.add(device.getAddress());
+                }
+                if(aotuConnect.contains(device.getAddress())){
+                    Intent intent = new Intent("android.ble.chair.control");
+                    intent.putExtra("address", device.getAddress());
+                    context.getApplicationContext().sendBroadcast(intent);
                 }
             }
         }

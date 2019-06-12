@@ -46,6 +46,10 @@
            <item name="android:layout_height">0px</item>  
           
     </style>
+    <style name="AppTheme.myTheme" parent="AppTheme">
+        <!-- 设置开机过渡图，当然也能换成自定义的布局/图片 -->
+        <item name="android:background">@drawable/four</item>
+    </style>
 
     <style name="tab_menu_item">
         <item name="android:layout_width">0dp</item>
