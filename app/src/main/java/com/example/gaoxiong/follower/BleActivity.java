@@ -5,13 +5,16 @@ import android.app.ListActivity;
 import android.bluetooth.BluetoothDevice;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -19,12 +22,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.orhanobut.logger.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+
 import static com.example.gaoxiong.follower.MainActivity.mBluetoothAdapter;
 
 
 public class BleActivity extends ListActivity implements PermissionInterface {
-    public BluetoothDevice mBluetoothDevice;
     private Button button;
 
     //设备扫描
@@ -32,7 +34,8 @@ public class BleActivity extends ListActivity implements PermissionInterface {
     StartScan scan = StartScan.getInstance();
     private Vibrator vibrator;
     private GoogleApiClient client;
-
+    SimpleAdapter simpleAdapter;
+   public static  ArrayList<HashMap<String, String>> list = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +50,10 @@ public class BleActivity extends ListActivity implements PermissionInterface {
         button = (Button) findViewById(R.id.mButton);
         button.setOnClickListener(new ButtonListener());
 
-        addDeviceToList();
+        simpleAdapter = new SimpleAdapter(this, list, R.layout.user,
+                new String[]{"user_name", "user_id"}, new int[]{R.id.user_name, R.id.user_id});
+        setListAdapter(simpleAdapter);
+
         if ( !mBluetoothAdapter.isEnabled()) {
             if (mBluetoothAdapter != null) {
                 mBluetoothAdapter.enable();///　/*隐式打开蓝牙*/
@@ -58,14 +64,16 @@ public class BleActivity extends ListActivity implements PermissionInterface {
 
 
 
+
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+
 
     @Override
     protected void onDestroy() {
 
         super.onDestroy();
-
 
     }
 
@@ -138,8 +146,13 @@ public class BleActivity extends ListActivity implements PermissionInterface {
     @Override
     protected void onResume() {
         super.onResume();
-    vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
+        vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
+        IntentFilter intentFilter =new IntentFilter();
+        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+
     }
+
+
 
     @Override
     public void onStop() {
@@ -178,8 +191,24 @@ public class BleActivity extends ListActivity implements PermissionInterface {
             if(mBluetoothAdapter.isEnabled()){
                 Logger.e("开始扫描");
                 scan.devices.clear();
+                list.clear();
                 scan.scanDevice(true);
-                addDeviceToList();
+                simpleAdapter.notifyDataSetChanged();
+                for(int i=0;i<10;i++){
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            simpleAdapter.notifyDataSetChanged();
+
+                        }
+                    },1000*i);
+
+                }
+
+
+
+
             }else {
                 mBluetoothAdapter.enable();
 
@@ -189,34 +218,10 @@ public class BleActivity extends ListActivity implements PermissionInterface {
 
     }
 
-    private void addDeviceToList() {
 
-        ArrayList<HashMap<String, String>> list = new ArrayList<>();
-        for (Iterator iterator = scan.devices.iterator(); iterator.hasNext(); ) {
-            mBluetoothDevice = (BluetoothDevice) iterator.next();
-            HashMap<String, String> map1 = new HashMap<String, String>();
 
-            map1.put("user_name", mBluetoothDevice.getName());
-            map1.put("user_id", mBluetoothDevice.getAddress());
-            list.add(map1);
-        }
-        SimpleAdapter simpleAdapter = new SimpleAdapter(this, list, R.layout.user,
-                new String[]{"user_name", "user_id"}, new int[]{R.id.user_name, R.id.user_id});
-        setListAdapter(simpleAdapter);
-    }
 
-    //启动蓝牙服务
-//    ServiceConnection serviceConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//            bleService = ((BService.LocalBinder) iBinder).getService();
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName componentName) {
-//            unbindService(serviceConnection);
-//        }
-//    };
+
 
     private  String Mac;
 
@@ -235,7 +240,7 @@ public class BleActivity extends ListActivity implements PermissionInterface {
             mBluetoothAdapter.enable();
         }
         Logger.e("点击地址>>>>>>>：" + Mac);
-        finish();
+//        finish();
     }
 
 

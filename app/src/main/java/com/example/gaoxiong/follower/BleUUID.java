@@ -23,7 +23,7 @@ public  class BleUUID {
     public static final UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString(HEART_RATE_MEASUREMENT);
     public static final String CHAIR_ADDRESS= "7C:01:0A:64:77:20";
     public static final String RADAR_ADDRESS= "3C:2D:B7:85:D9:B9";
-    public static final String CUSION_ADDRESS= "C8:FD:19:87:AF:F8";
+    public static final String CUSION_ADDRESS= "7C:01:0A:64:73:9B";
     public  static  HashMap<String, String> map = new HashMap<String, String>() {
         {
             put(CHAIR_ADDRESS, "智能轮椅");

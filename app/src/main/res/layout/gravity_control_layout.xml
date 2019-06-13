@@ -6,20 +6,16 @@
 
     <Button
         android:id="@+id/stopButton"
-        style="@style/layout_custom"
         android:layout_centerHorizontal="true"
+        android:layout_height="70dp"
+        android:layout_width="70dp"
         android:layout_below="@+id/frontButton"
-        android:layout_margin="50dp"
-        android:background="@drawable/stop"
+        android:layout_margin="10dp"
+        android:background="@drawable/btn_bg_s"
+        android:textColor="@color/text_yellow"
+        android:text="@string/rocker"
         />
 
-    <Button
-        android:id="@+id/frontButton"
-        style="@style/layout_custom"
-        android:layout_marginTop="60dp"
-        android:layout_centerHorizontal="true"
-
-        android:background="@drawable/front_arrow" />
     <Button
         android:id="@+id/rightButton"
         style="@style/layout_custom"
@@ -43,17 +39,13 @@
         android:background="@drawable/left_arrow" />
 
     <Button
-        android:text="@string/start_up_gravity"
-        android:layout_width="125dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="40dp"
-        android:textSize="18sp"
-        android:background="@drawable/check_border"
-        android:textColor="@color/text_yellow"
-        android:id="@+id/button4" />
+        android:id="@+id/frontButton"
+        style="@style/layout_custom"
+        android:layout_marginTop="58dp"
+
+        android:background="@drawable/front_arrow"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/backButton" />
 
     <Button
         android:text="@string/start_up_btn"
@@ -66,6 +58,19 @@
         android:layout_alignBaseline="@+id/button4"
         android:layout_alignBottom="@+id/button4"
         android:layout_alignStart="@+id/leftButton" />
+
+    <Button
+        android:text="@string/start_up_gravity"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="51dp"
+        android:textSize="18sp"
+        android:background="@drawable/check_border"
+        android:textColor="@color/text_yellow"
+        android:id="@+id/button4"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/button5"
+        android:layout_marginStart="32dp" />
 
 
 </RelativeLayout>

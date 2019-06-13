@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,9 +21,12 @@ import android.widget.Toast;
 import com.example.gaoxiong.follower.BleService;
 import com.example.gaoxiong.follower.BleUUID;
 import com.example.gaoxiong.follower.R;
+import com.example.gaoxiong.follower.RockerActivity;
+import com.orhanobut.logger.LogAdapter;
 import com.orhanobut.logger.Logger;
 
 import static android.content.Context.SENSOR_SERVICE;
+import static android.view.View.*;
 import static com.example.gaoxiong.follower.myFragment.MyFragment1.mainActivity;
 
 /**
@@ -108,24 +113,35 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
          view = inflater.inflate(R.layout.gravity_control_layout,container,false);
         button4 = (Button)view.findViewById(R.id.button4);
-        button4.setOnClickListener(clickListener);
+//        button4.setOnTouchListener(clickListener);
+        button4.setOnClickListener(clickListener.get());
         button5 = (Button)view.findViewById(R.id.button5);
-        button5.setOnClickListener(clickListener);
+        button5.setOnClickListener(clickListener.get());
         if(BleUUID.chair_state.equals("停止")){
             button5.setText("停止按钮控制");
+            button5.setTextColor(context.getResources().getColor(R.color.color_Green));
         }
 
         stopButton = (Button)view.findViewById(R.id.stopButton);
+        stopButton.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+               Intent intent =new Intent(context.getApplicationContext(), RockerActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
         frontButton = (Button)view.findViewById(R.id.frontButton);
         backButton = (Button)view.findViewById(R.id.backButton);
         leftButton = (Button)view.findViewById(R.id.leftButton);
         rightButton = (Button)view.findViewById(R.id.rightButton);
 
-        stopButton.setOnClickListener(clickListener );
-        frontButton.setOnClickListener(clickListener );
-        backButton.setOnClickListener(clickListener );
-        leftButton.setOnClickListener(clickListener );
-        rightButton.setOnClickListener(clickListener );
+
+
+        frontButton.setOnTouchListener(touchListener );
+        backButton.setOnTouchListener(touchListener );
+        leftButton.setOnTouchListener(touchListener );
+        rightButton.setOnTouchListener(touchListener );
 
         sensorManager = (SensorManager)context.getSystemService(SENSOR_SERVICE);
         Logger.e("第三个Fragment");
@@ -181,86 +197,27 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-    View.OnClickListener clickListener = new View.OnClickListener(){
+OnTouchListener touchListener = new OnTouchListener(){
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if(event.getAction()==MotionEvent.ACTION_DOWN){
 
-        @Override
-        public void onClick(View v) {
             mainActivity. vibrator.vibrate(60);
             if(BleService.hashMap.get(BleUUID.CHAIR_ADDRESS)!=null) {
-                if (BleService.hashMap.get(BleUUID.CHAIR_ADDRESS).getState() == 2) {
-
-                }else {
+                if (BleService.hashMap.get(BleUUID.CHAIR_ADDRESS).getState() == 0) {
                     mainActivity.getViewPager().setCurrentItem(3);
                     Toast.makeText(context.getApplicationContext(),"请连接智能轮椅",Toast.LENGTH_SHORT).show();
-                    return;
                 }
             }else {
                 mainActivity.getViewPager().setCurrentItem(3);
                 Toast.makeText(context.getApplicationContext(),"请连接智能轮椅",Toast.LENGTH_SHORT).show();
-                return;
             }
-
-
+            bool = false;
+            Logger.d("触摸事件>>>>>>>按下");
+            button5.setText(getString(R.string.stop_btn));
+            button5.setTextColor(context.getResources().getColor(R.color.color_Green));
+            BleUUID.chair_state = "停止";
             switch (v.getId()){
-
-                case R.id.button4:
-
-
-                    if(!bool){
-                        Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
-                        intent0.putExtra("control","a");
-                        context.getApplicationContext().sendBroadcast(intent0);
-                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
-                        i1.putExtra("start",context.getResources().getString(R.string.stop_follower));
-                        context.getApplicationContext().sendBroadcast(i1);
-                        bool = true;
-                        button4.setText(getString(R.string.stop_gravity));
-                        BleUUID.chair_state = "停止";
-                        button5.setText(getString(R.string.stop_btn));
-                    }else{
-                        bool = false;
-                        Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
-                        intent0.putExtra("control","c");
-                        context.getApplicationContext().sendBroadcast(intent0);
-                        button4.setText(getString(R.string.start_up_gravity));
-
-                    }
-
-
-                    break;
-                case R.id.button5:
-                    if(button5.getText().equals(getString(R.string.start_up_btn))){
-                        Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
-                        intent0.putExtra("control","a");
-                        context.getApplicationContext().sendBroadcast(intent0);
-                        button5.setText(getString(R.string.stop_btn));
-                        button4.setText(context.getString(R.string.start_up_gravity));
-                         BleUUID.chair_state = "停止";
-                        bool = false;
-                    }else {
-                        Intent intent0= new Intent(BleUUID.CHAIR_CONTROL);
-                        intent0.putExtra("control","c");
-                        context.getApplicationContext().sendBroadcast(intent0);
-                        button5.setText(getString(R.string.start_up_btn));
-                        BleUUID.chair_state = "启动";
-                        bool = false;
-                    }
-                    bool = false;
-                    button4.setText(context.getString(R.string.start_up_gravity));
-
-                    break;
-
-                case R.id.stopButton:
-                    String s="s";
-                    Logger.e("s");
-                    Intent intent2= new Intent(BleUUID.CHAIR_CONTROL);
-                    intent2.putExtra("control",s);
-                    context.getApplicationContext().sendBroadcast(intent2);
-                    bool = false;
-                    button4.setText(context.getString(R.string.start_up_gravity));
-                    button5.setText(getString(R.string.stop_btn));
-                    BleUUID.chair_state = "停止";
-                    break;
                 case R.id.leftButton:
                     String l="l";
                     Logger.e("l");
@@ -269,8 +226,7 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     context.getApplicationContext().sendBroadcast(intent3);
                     bool = false;
                     button4.setText(context.getString(R.string.start_up_gravity));
-                    button5.setText(getString(R.string.stop_btn));
-                    BleUUID.chair_state = "停止";
+                    button4.setTextColor(context.getResources().getColor(R.color.text_yellow));
                     break;
                 case R.id.rightButton:
                     String r="r";
@@ -280,8 +236,7 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     button4.setText(context.getString(R.string.start_up_gravity));
                     intent4.putExtra("control",r);
                     context.getApplicationContext().sendBroadcast(intent4);
-                    button5.setText(getString(R.string.stop_btn));
-                    BleUUID.chair_state = "停止";
+                    button4.setTextColor(context.getResources().getColor(R.color.text_yellow));
                     break;
                 case R.id.frontButton:
                     String f="f";
@@ -290,9 +245,8 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     intent5.putExtra("control",f);
                     context.getApplicationContext().sendBroadcast(intent5);
                     bool = false;
-                    button5.setText(getString(R.string.stop_btn));
-                    BleUUID.chair_state = "停止";
                     button4.setText(context.getString(R.string.start_up_gravity));
+                    button4.setTextColor(context.getResources().getColor(R.color.text_yellow));
                     break;
                 case R.id.backButton:
                     String b="b";
@@ -301,13 +255,104 @@ public class MyFragment3 extends Fragment  implements SensorEventListener {
                     intent7.putExtra("control",b);
                     context.getApplicationContext().sendBroadcast(intent7);
                     bool = false;
-                    button5.setText(getString(R.string.stop_btn));
-                    BleUUID.chair_state = "停止";
                     button4.setText(context.getString(R.string.start_up_gravity));
+                    button4.setTextColor(context.getResources().getColor(R.color.text_yellow));
                     break;
                 default:break;
             }
+        }else if(event.getAction()==MotionEvent.ACTION_UP){
+            mainActivity. vibrator.vibrate(60);
+            for(int i=0;i<5;i++){
+                Intent intent5 = new Intent(BleUUID.CHAIR_CONTROL);
+                Logger.e("s");
+                intent5.putExtra("control","s");
+                context.getApplicationContext().sendBroadcast(intent5);
+            }
+            BleUUID.chair_state = "停止";
         }
+        return true;
+    }
+};
+    final ThreadLocal<OnClickListener> clickListener = new ThreadLocal<OnClickListener>() {
+        @Override
+        protected OnClickListener initialValue() {
+            return new OnClickListener() {
 
+                @Override
+                public void onClick(View v) {
+                    mainActivity.vibrator.vibrate(60);
+
+                    if (BleService.hashMap.get(BleUUID.CHAIR_ADDRESS) != null) {
+                        if (BleService.hashMap.get(BleUUID.CHAIR_ADDRESS).getState() == 2) {
+
+                        } else {
+                            mainActivity.getViewPager().setCurrentItem(3);
+                            Toast.makeText(context.getApplicationContext(), "请连接智能轮椅", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    } else {
+                        mainActivity.getViewPager().setCurrentItem(3);
+                        Toast.makeText(context.getApplicationContext(), "请连接智能轮椅", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Logger.d("点击事件>>>>>>>点击");
+
+                    switch (v.getId()) {
+
+                        case R.id.button4:
+                            if (!bool) {
+                                Intent i1 = new Intent(BleUUID.BTN_CHANGE);
+                                i1.putExtra("start", context.getResources().getString(R.string.stop_follower));
+                                context.getApplicationContext().sendBroadcast(i1);
+
+                                Intent intent0 = new Intent(BleUUID.CHAIR_CONTROL);
+                                intent0.putExtra("control", "a");
+                                context.getApplicationContext().sendBroadcast(intent0);
+
+                                bool = true;
+                                button4.setText(getString(R.string.stop_gravity));
+                                button4.setTextColor(context.getResources().getColor(R.color.color_Green));
+                                button5.setTextColor(context.getResources().getColor(R.color.color_Green));
+                                BleUUID.chair_state = "停止";
+                                button5.setText(getString(R.string.stop_btn));
+
+                            } else {
+                                bool = false;
+                                Intent intent0 = new Intent(BleUUID.CHAIR_CONTROL);
+                                intent0.putExtra("control", "s");
+                                context.getApplicationContext().sendBroadcast(intent0);
+                                button4.setText(getString(R.string.start_up_gravity));
+                                button4.setTextColor(context.getResources().getColor(R.color.text_yellow));
+
+                            }
+                            break;
+                        case R.id.button5:
+                            if (button5.getText().equals(getString(R.string.start_up_btn))) {
+                                Intent intent0 = new Intent(BleUUID.CHAIR_CONTROL);
+                                intent0.putExtra("control", "a");
+                                context.getApplicationContext().sendBroadcast(intent0);
+                                button5.setText(getString(R.string.stop_btn));
+                                button4.setText(context.getString(R.string.start_up_gravity));
+                                button5.setTextColor(context.getResources().getColor(R.color.color_Green));
+                                button4.setTextColor(context.getResources().getColor(R.color.text_yellow));
+                                BleUUID.chair_state = "停止";
+                            } else {
+                                Intent intent0 = new Intent(BleUUID.CHAIR_CONTROL);
+                                intent0.putExtra("control", "s");
+                                context.getApplicationContext().sendBroadcast(intent0);
+                                button5.setText(getString(R.string.start_up_btn));
+                                button5.setTextColor(context.getResources().getColor(R.color.text_yellow));
+                                BleUUID.chair_state = "启动";
+                            }
+                            bool = false;
+                            button4.setText(context.getString(R.string.start_up_gravity));
+                            button4.setTextColor(context.getResources().getColor(R.color.text_yellow));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            };
+        }
     };
 }

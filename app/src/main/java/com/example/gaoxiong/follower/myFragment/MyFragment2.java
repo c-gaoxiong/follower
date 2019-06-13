@@ -100,7 +100,7 @@ TextView textView;
                         break;
                     case "s4":
                         textView.setText("无人");
-                        BleUUID.chair_state = "启动";
+//                        BleUUID.chair_state = "启动";
 //                        Intent i1 = new Intent(BleUUID.BTN_CHANGE);
 //                        i1.putExtra("start",getString(R.string.follower));
 //                        context.getApplicationContext().sendBroadcast(i1);

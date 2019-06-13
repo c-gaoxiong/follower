@@ -60,6 +60,11 @@ public class MyFragment1 extends Fragment {
         Logger.e("第一个Fragment");
         button = (Button)view.findViewById(R.id.button);//启动
         button.setText(BleUUID.chair_state);
+        if(BleUUID.chair_state.equals("停止")){
+            button.setTextColor(context.getResources().getColor(R.color.color_Green));
+        }else {
+            button.setTextColor(context.getResources().getColor(R.color.text_yellow));
+        }
         button2 = (Button)view.findViewById(R.id.button2);//跟随
         button2.setText(BleUUID.radar_state);
         button3 = (Button)view.findViewById(R.id.button3);//人体状态
@@ -97,19 +102,29 @@ public class MyFragment1 extends Fragment {
                 if(string!=null){
                     if(string.equals(context.getResources().getString(R.string.follower))){
                         button2.setText(context.getResources().getString(R.string.stop_follower));
+                        button2.setTextColor(getResources().getColor(R.color.color_Green));
+
                         intent1.putExtra("start","开始跟随");
                         BleUUID.radar_state =context.getResources().getString(R.string.stop_follower);
                         Logger.d("开始跟随");
                         context.getApplicationContext().sendBroadcast(intent1);
                     }else {
                         button2.setText(getString(R.string.follower));
+                        button2.setTextColor(context.getResources().getColor(R.color.text_yellow));
+
                         intent1.putExtra("start","停止跟随");
                         Logger.d("停止跟随");
                         context.getApplicationContext().sendBroadcast(intent1);
-
                         BleUUID.radar_state = getString(R.string.follower);
                     }
 
+                }
+                if(BleUUID.chair_state.equals("启动")){
+                    button.setText("启动");
+                    button.setTextColor(context.getResources().getColor(R.color.text_yellow));
+                }else {
+                    button.setText("停止");
+                    button.setTextColor(context.getResources().getColor(R.color.color_Green));
                 }
 
             }
@@ -141,6 +156,7 @@ public class MyFragment1 extends Fragment {
                         context.getApplicationContext().sendBroadcast(i);
                         BleUUID.chair_state = "停止";
                         button.setText("停止");
+                        button.setTextColor(context.getResources().getColor(R.color.color_Green));
                         Logger.d("正坐");
                         break;
                     case "s1":
@@ -151,6 +167,7 @@ public class MyFragment1 extends Fragment {
                         context.getApplicationContext().sendBroadcast(i);
                         BleUUID.chair_state = "启动";
                         button.setText("启动");
+                        button.setTextColor(context.getResources().getColor(R.color.text_yellow));
                         break;
                     case "s2":
                         button3.setText("左倾");
@@ -160,6 +177,7 @@ public class MyFragment1 extends Fragment {
                         Logger.d("左倾");
                         BleUUID.chair_state = "启动";
                         button.setText("启动");
+                        button.setTextColor(context.getResources().getColor(R.color.text_yellow));
                         break;
                     case "s3":
                         button3.setText("右倾");
@@ -169,12 +187,16 @@ public class MyFragment1 extends Fragment {
                         Logger.d("右倾");
                         BleUUID.chair_state = "启动";
                         button.setText("启动");
+                        button.setTextColor(context.getResources().getColor(R.color.text_yellow));
                         break;
                     case "s4":
                         button3.setText("无人");
+                        button3.setTextColor(context.getResources().getColor(R.color.colorOrange));
                         Logger.d("无人");
-                        BleUUID.chair_state = "启动";
-                        button.setText("启动");
+
+
+//                        BleUUID.chair_state = "启动";
+//                        button.setText("启动");
 
                         break;
                     default:break;
@@ -203,10 +225,10 @@ public class MyFragment1 extends Fragment {
                             if(button.getText().equals(context.getString(R.string.start_up))){
                                 Logger.e("a");
                                 Logger.e(context.getString(R.string.start_up));
-
                                 intent0.putExtra("control","a");
                                 context.getApplicationContext().sendBroadcast(intent0);
                                 button.setText(context.getString(R.string.stop));
+                                button.setTextColor(context.getResources().getColor(R.color.color_Green));
                                 BleUUID.chair_state = "停止";
 
                             }else{
@@ -214,11 +236,14 @@ public class MyFragment1 extends Fragment {
                                 intent0.putExtra("control","c");
                                 context.getApplicationContext().sendBroadcast(intent0);
                                 button.setText(getString(R.string.start_up));
-
+                                button.setTextColor(context.getResources().getColor(R.color.text_yellow));
+                                button2.setText("开始跟随");
+                                button2.setTextColor(context.getResources().getColor(R.color.text_yellow));
                                 Intent intent10 = new Intent(BleUUID.BTN_CHANGE);
                                 intent10.putExtra("start",getString(R.string.stop_follower));
                                 context.getApplicationContext().sendBroadcast(intent10);
                                 BleUUID.chair_state = "启动";
+                                BleUUID.radar_state = "停止跟随";
 
                             }//end  if(button.getText().equals(context.getString(R.string.start_up)))
                         }
@@ -244,19 +269,16 @@ public class MyFragment1 extends Fragment {
                                 changeToAnotherFragment();
                                 return;
                             }
-
-                            intent0.putExtra("control","a");
-                            context.getApplicationContext().sendBroadcast(intent0);
-
                             String s = (String) button2.getText();
                             Intent intent2 = new Intent(BleUUID.BTN_CHANGE);
                             intent2.putExtra("start",s);
                             context.getApplicationContext().sendBroadcast(intent2);
-
-                            intent0.putExtra("control","a");
-                            context.getApplicationContext().sendBroadcast(intent0);
-                            button.setText(context.getString(R.string.stop));
+                            button.setText("停止");
+                            button.setTextColor(context.getResources().getColor(R.color.color_Green));
                             BleUUID.chair_state = "停止";
+
+
+
                         }else {
                             Toast.makeText(context.getApplicationContext(),"请连接激光雷达",Toast.LENGTH_SHORT).show();
                             changeToAnotherFragment();
@@ -268,10 +290,6 @@ public class MyFragment1 extends Fragment {
 
                         changeToAnotherFragment();
                     }
-
-
-
-
                     break;
                 default:break;
             }
@@ -280,7 +298,6 @@ public class MyFragment1 extends Fragment {
 
     };
     public void changeToAnotherFragment(){
-
         mainActivity.getViewPager().setCurrentItem(3);
 //        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 ////        FragmentManager fragmentManager = getActivity().getFragmentManager();

@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        vibrator.vibrate(60);
+//        vibrator.vibrate(60);
         switch (checkedId) {
             case R.id.rb_channel:
 

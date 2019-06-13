@@ -46,8 +46,9 @@
 
         <activity android:name=".ConnectActivity" />
         <activity android:name=".GravityActivity" />
-        <activity android:name=".FirstActivity"></activity>
-        <activity android:name=".myFragment.Main2Activity"></activity>
+        <activity android:name=".FirstActivity" />
+        <activity android:name=".myFragment.Main2Activity" />
+        <activity android:name=".RockerActivity"></activity>
     </application>
 
 </manifest>

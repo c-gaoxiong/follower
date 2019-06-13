@@ -112,7 +112,7 @@ public class MyFragment4 extends Fragment {
                                         i.putExtra("address",str[p]);
                                         context.getApplicationContext().sendBroadcast(i);
                                         str2[p] = "连接";
-                                        useBtn.setText("连接");
+                                        useBtn.setText("正在断开");
                                     }
                                 }
                                 if(useBtn.getText().equals("断开连接")){
@@ -121,7 +121,7 @@ public class MyFragment4 extends Fragment {
                                     i.putExtra("address",str[p]);
                                     context.getApplicationContext().sendBroadcast(i);
                                     str2[p] = "连接";
-                                    useBtn.setText("连接");
+                                    useBtn.setText("正在断开");
 //                                useBtn.setTextColor(context.getResources().getColor(R.color.colorWhite));
                                 }
                             }else {

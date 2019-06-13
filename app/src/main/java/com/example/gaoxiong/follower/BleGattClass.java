@@ -22,7 +22,6 @@ import java.util.UUID;
 
 import static com.example.gaoxiong.follower.BleUUID.*;
 
-
 public class BleGattClass {
     private String uuid = null;
     private BluetoothAdapter bluetoothAdapter = null;
@@ -56,18 +55,6 @@ public String getUuidName(String string){
     return BleUUID.map.get(string);
 }
 
-//    private Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//         if(state == 0){
-//             disConnect();
-//             Logger.d("断开连接");
-//         }
-//        }
-//    };
-//    private Handler handler = new Handler();
-
-
 
 
     void connectBluetooth() {
@@ -82,7 +69,6 @@ public String getUuidName(String string){
                         bluetoothGatt = bluetoothDevice.connectGatt(context, false, callback);
                         Logger.e("执行了连接的操作");
                     }
-
 
             }
         }).start();
@@ -113,11 +99,24 @@ public String getUuidName(String string){
                     }
                 });
                 Logger.e("成功连接"+uuid);
+                Logger.e("成功连接"+bluetoothGatt.toString());
                 gatt.discoverServices();
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                bluetoothGatt.close();
+                Logger.d("bluetoothGatt>>>>>"+bluetoothGatt.toString());
+                if(bluetoothGatt!=null){
+                    bluetoothGatt.close();
+                    Logger.d("bluetoothGatt>>>>>"+bluetoothGatt.toString());
+                }
                 bluetoothGatt = null;
+                Logger.d("bluetoothGatt>>>>>"+bluetoothGatt);
+
+                if(BleUUID.map.get(uuid)=="智能轮椅"){
+                    BleUUID.chair_state = "启动";
+                    Intent intent1 = new Intent(BleUUID.BTN_CHANGE);
+                    context.getApplicationContext().sendBroadcast(intent1);
+                }
+
                 Logger.e("已断开连接>>>>>"+uuid);
                 handler.post(new Runnable() {
                     public void run() {
@@ -268,6 +267,7 @@ public String getUuidName(String string){
 //            bluetoothGatt = null;
             return true;
         }
+//        bluetoothGatt = null;
 
         return true;
     }

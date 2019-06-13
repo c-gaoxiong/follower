@@ -11,7 +11,10 @@ import android.os.Build;
 import android.os.Handler;
 import com.orhanobut.logger.Logger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import static com.example.gaoxiong.follower.BleActivity.list;
 
 
 public class StartScan {
@@ -82,12 +85,20 @@ public class StartScan {
                 if (!devices.contains(device)) {  //判断是否已经添加
                     devices.add(device);
                     address.add(device.getAddress());
+
+                    HashMap<String, String> map1 = new HashMap<String, String>();
+                    map1.put("user_name", device.getName());
+                    map1.put("user_id", device.getAddress());
+                    list.add(map1);
+
                 }
+
                 if(aotuConnect.contains(device.getAddress())){
                     Intent intent = new Intent("android.ble.chair.control");
                     intent.putExtra("address", device.getAddress());
                     context.getApplicationContext().sendBroadcast(intent);
                 }
+
             }
         }
 
