@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         rg_tab_bar.setOnCheckedChangeListener(this);
 
         vpager = (ViewPager) findViewById(R.id.vpager);
-        vpager.getBackground().setAlpha(127);
+//        vpager.getBackground().setAlpha(127);
         vpager.setAdapter(mAdapter);
         vpager.setCurrentItem(0);
         vpager.addOnPageChangeListener(this);

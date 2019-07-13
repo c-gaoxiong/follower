@@ -104,12 +104,12 @@ public String getUuidName(String string){
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Logger.d("bluetoothGatt>>>>>"+bluetoothGatt.toString());
-                if(bluetoothGatt!=null){
+                if(null!=bluetoothGatt){
                     bluetoothGatt.close();
                     Logger.d("bluetoothGatt>>>>>"+bluetoothGatt.toString());
                 }
-                bluetoothGatt = null;
-                Logger.d("bluetoothGatt>>>>>"+bluetoothGatt);
+//                bluetoothGatt = null;
+//                Logger.d("bluetoothGatt>>>>>"+bluetoothGatt);
 
                 if(BleUUID.map.get(uuid)=="智能轮椅"){
                     BleUUID.chair_state = "启动";
@@ -259,7 +259,7 @@ public String getUuidName(String string){
     }
 
     public boolean disConnect() {
-        if (bluetoothGatt != null) {
+        if ( null!= bluetoothGatt) {
             bluetoothGatt.disconnect();
 //            bluetoothGatt.close();
             bluetoothDevice = null;

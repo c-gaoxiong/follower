@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background ="@drawable/four">
+   >
+    <!--android:background ="@drawable/four"-->
+
 
     <Button
         android:layout_width="match_parent"
@@ -15,10 +17,10 @@
         android:background="@drawable/btn_bg_s"
         android:textColor="@color/text_yellow"
         android:id="@+id/cButton" />
-
     <ListView
         android:id="@+id/ble_list"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
 </LinearLayout>

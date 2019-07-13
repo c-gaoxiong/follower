@@ -36,7 +36,7 @@ public class MyFragment4 extends Fragment {
 
     public MyFragment4() {
     }
-    String[] str = new String[]{BleUUID.CHAIR_ADDRESS,BleUUID.RADAR_ADDRESS,BleUUID.CUSION_ADDRESS};
+    String[] str = new String[]{BleUUID.CHAIR_ADDRESS,BleUUID.RADAR_ADDRESS,BleUUID.CUSHION_ADDRESS};
     String[] str2 = new String[]{"连接","连接","连接"};
     String[] str3 = new String[]{ "智能轮椅", "激光雷达", "智能坐垫"  };
     View view;
@@ -184,7 +184,7 @@ public class MyFragment4 extends Fragment {
                         case BleUUID.RADAR_ADDRESS:
                             bluetoothState(1,states);
                             break;
-                        case BleUUID.CUSION_ADDRESS:
+                        case BleUUID.CUSHION_ADDRESS:
                             bluetoothState(2,states);
                             break;
                         default:break;
@@ -223,8 +223,8 @@ public class MyFragment4 extends Fragment {
 
 
         }
-        if(BleService.hashMap.get(BleUUID.CUSION_ADDRESS)!=null){
-            bluetoothState(2,BleService.hashMap.get(BleUUID.CUSION_ADDRESS).getState());
+        if(BleService.hashMap.get(BleUUID.CUSHION_ADDRESS)!=null){
+            bluetoothState(2,BleService.hashMap.get(BleUUID.CUSHION_ADDRESS).getState());
         }
 
     }

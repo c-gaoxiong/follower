@@ -22,13 +22,15 @@ public  class BleUUID {
     public final static String HEART_RATE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
     public static final UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString(HEART_RATE_MEASUREMENT);
     public static final String CHAIR_ADDRESS= "7C:01:0A:64:77:20";
+//    public static final String CHAIR_ADDRESS= "7C:01:0A:64:77:1C";//1C为血糖
     public static final String RADAR_ADDRESS= "3C:2D:B7:85:D9:B9";
-    public static final String CUSION_ADDRESS= "7C:01:0A:64:73:9B";
+    public static final String CUSHION_ADDRESS= "7C:01:0A:64:73:9B";
+
     public  static  HashMap<String, String> map = new HashMap<String, String>() {
         {
             put(CHAIR_ADDRESS, "智能轮椅");
            put(RADAR_ADDRESS, "激光雷达");
-            put(CUSION_ADDRESS, "智能坐垫");
+            put(CUSHION_ADDRESS, "智能坐垫");
         }
     };
 

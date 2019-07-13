@@ -338,7 +338,7 @@ OnTouchListener touchListener = new OnTouchListener(){
                                 BleUUID.chair_state = "停止";
                             } else {
                                 Intent intent0 = new Intent(BleUUID.CHAIR_CONTROL);
-                                intent0.putExtra("control", "s");
+                                intent0.putExtra("control", "c");
                                 context.getApplicationContext().sendBroadcast(intent0);
                                 button5.setText(getString(R.string.start_up_btn));
                                 button5.setTextColor(context.getResources().getColor(R.color.text_yellow));
